@@ -29,14 +29,26 @@ public class XML {
     }
 
     public void print() {
-        Node tracks = document.getElementsByTagName("plist").item(0);
-        NodeList nodeList = tracks.getChildNodes();
-        //NodeList nodeList = document.getElementsByTagName("Tracks");
+        Element plist = (Element) document.getElementsByTagName("plist").item(0);
+        NodeList children = plist.getChildNodes();
+        Element parentDictionary = null;
+        for (int i = 0; i < children.getLength() && parentDictionary == null; ++i) {
+            Node child = children.item(i);
+            if (child.getNodeName().equals("dict"))
+                parentDictionary = (Element) child;
+        }
+
+
+
+        NodeList elements = parentDictionary.getChildNodes();
         //NodeList nodeList = document.getChildNodes().;
 
-        for (int itr = 0; itr < nodeList.getLength(); itr++) {
+        for (int i = 0; i < elements.getLength(); i++) {
+            Node node = elements.item(i);
+            if (node.getNodeType() == Node.ELEMENT_NODE)
+                System.out.println(node.getNodeName());
 
-            Node node = nodeList.item(itr);
+            /*
             if (node.getNodeName().equals("dict")) {
                 NodeList trackList = node.getChildNodes();
                 for (int i = 0; i < trackList.getLength(); ++i) {
@@ -44,6 +56,7 @@ public class XML {
                 }
 
             }
+            */
 
         }
     }
