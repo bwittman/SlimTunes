@@ -1,11 +1,16 @@
 package slimtunes;
 
+import org.xml.sax.SAXException;
 import slimtunes.gui.SongTableModel;
 import slimtunes.library.Library;
 import slimtunes.library.Song;
+import slimtunes.library.XML;
 
 import javax.swing.*;
+import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 
 public class SlimTunes extends JFrame {
@@ -29,6 +34,13 @@ public class SlimTunes extends JFrame {
         this.setLocationRelativeTo(null);
 
         setVisible(true);
+
+        try {
+            XML xml = new XML(Path.of("Library.xml"));
+            xml.print();
+        } catch (ParserConfigurationException | IOException | SAXException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
