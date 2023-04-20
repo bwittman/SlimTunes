@@ -4,8 +4,14 @@ import slimtunes.library.Song;
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
 
+import static slimtunes.library.Song.Fields;
+
 public class SongTableModel extends AbstractTableModel {
     List<Song> songs;
+
+    private static final Song.Fields[] COLUMNS = new Fields[] {
+            Song.Fields.TRACK_ID, Song.Fields.NAME, Song.Fields.ARTIST, Song.Fields.SIZE, Song.Fields.TOTAL_TIME, Song.Fields.BIT_RATE, Song.Fields.LOCATION, Song.Fields.ALBUM, Song.Fields.GENRE, Song.Fields.TRACK_NUMBER, Song.Fields.YEAR
+    };
 
     public SongTableModel(List<Song> songs) {
         this.songs = songs;
@@ -18,12 +24,14 @@ public class SongTableModel extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return Song.Fields.values().length;
+        return COLUMNS.length;
     }
 
-    private static String secondsToTime(int seconds) {
-        if (seconds == -1)
+    private static String millisecondsToTime(int milliseconds) {
+        if (milliseconds == -1)
             return "";
+
+        int seconds = milliseconds / 1000;
 
         int hours = seconds / 3600;
         int minutes = seconds % 3600 / 60;
@@ -54,7 +62,7 @@ public class SongTableModel extends AbstractTableModel {
         if (column < 0 || column >= getColumnCount())
             return "";
 
-        return Song.Fields.values()[column].toString();
+        return COLUMNS[column].toString();
     }
 
     @Override
@@ -63,22 +71,19 @@ public class SongTableModel extends AbstractTableModel {
             return null;
 
         Song song = songs.get(rowIndex);
-        return clean(switch (Song.Fields.values()[columnIndex]) {
-            case ID -> song.getId();
+        return clean(switch(COLUMNS[columnIndex]){
+            case TRACK_ID -> song.getTrackId();
             case NAME -> song.getName();
             case ARTIST -> song.getArtist();
+            case SIZE -> song.getSize();
+            case TOTAL_TIME -> millisecondsToTime(song.getTotalTime());
+            case BIT_RATE -> song.getBitRate();
+            case LOCATION -> song.getLocation();
             case ALBUM -> song.getAlbum();
             case GENRE -> song.getGenre();
-            case SIZE -> song.getSize();
-            case TIME -> secondsToTime(song.getTime());
-            case DISC -> song.getDisc();
-            case DISC_COUNT -> song.getDiscCount();
-            case TRACK -> song.getTrack();
-            case TRACK_COUNT -> song.getTrackCount();
+            case TRACK_NUMBER -> song.getTrackNumber();
             case YEAR -> song.getYear();
-            case BIT_RATE -> song.getBitRate();
-            case SAMPLE_RATE -> song.getSampleRate();
-            case PATH -> song.getPath();
+            default -> "";
         });
     }
 }
