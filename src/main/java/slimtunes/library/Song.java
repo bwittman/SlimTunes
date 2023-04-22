@@ -2,6 +2,8 @@ package slimtunes.library;
 
 import java.nio.file.Path;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Song {
     public enum Fields {
@@ -26,6 +28,79 @@ public class Song {
             return result.toString();
         }
     }
+
+    public static class Builder {
+        private Map<String, String> fields = new HashMap<>();
+        private boolean building = false;
+
+        public void startBuilding() {
+            fields.clear();
+            building = true;
+        }
+
+        public void addField(String key, String value) {
+            if (!building)
+                throw new IllegalArgumentException("Cannot add a field unless in the process of building a song.");
+
+            fields.put(key, value);
+        }
+
+        public Song buildSong() {
+            if (!building)
+                throw new IllegalArgumentException("Cannot build a song until building has been started.");
+
+            building = false;
+
+            int trackId = -1;
+            String name = null;
+            String artist = null;
+            String kind = null;
+            int size = -1; // bytes
+            int totalTime = -1; // seconds
+            Date dateModified = null;
+            Date dateAdded = null;
+            int bitRate = -1;
+            int sampleRate = -1;
+            int playCount = -1;
+            Date playDate = null;
+            int persistentID = -1;
+            String trackType = null;
+            Path location = null;
+            int fileFolderCount = -1;
+            int libraryFolderCount = -1;
+            int skipCount = -1;
+            Date skipDate = null;
+            String albumArtist = null;
+            String composer = null;
+            String album = null;
+            String genre = null;
+            int trackNumber = -1;
+            int year = -1;
+            int trackCount = -1;
+            int artworkCount = -1;
+            String sortName = null;
+            String comments = null;
+            int normalization = -1;
+            int bpm = -1;
+            String sortAlbum = null;
+            String sortAlbumArtist = null;
+            String sortArtist = null;
+            int discNumber = -1;
+            int discCount = -1;
+            String grouping = null;
+            String work = null;
+            String sortComposer = null;
+            int volumeAdjustment = -1;
+            boolean compilation = false;
+            boolean partOfGaplessAlbum = false;
+
+            return null;
+        }
+
+
+    }
+
+
 
     public int getTrackId() {
         return trackId;

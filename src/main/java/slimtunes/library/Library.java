@@ -11,4 +11,8 @@ public class Library {
     public List<Song> getSongs() {
         return new ArrayList<>(songs.values());
     }
+
+    public void putSong(int trackId, Song song) {
+        songs.put(trackId, song);
+    }
 }

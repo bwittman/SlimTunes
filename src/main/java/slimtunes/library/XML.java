@@ -31,6 +31,10 @@ public class XML implements DictionaryProcessor {
         document = builder.parse(new InputSource(new BufferedReader(new FileReader(path.toFile()))));
     }
 
+    public void load(Library library) {
+
+    }
+
     @Override
     public void handleKeyValue(Element key, Element value) {
         System.out.print("Key: " + key.getTextContent());
@@ -51,6 +55,9 @@ public class XML implements DictionaryProcessor {
     }
 
     public void processSongFields(Element key, Element value) {
+
+
+
         songFields.add(key.getTextContent());
     }
 
