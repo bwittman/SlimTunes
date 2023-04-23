@@ -1,5 +1,7 @@
 package slimtunes.library;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.text.DateFormat;
 import java.time.LocalDateTime;
@@ -45,6 +47,20 @@ public class Song {
                 return LocalDateTime.parse(date.substring(0, date.length() - 1));
             else
                 return LocalDateTime.parse(date);
+        }
+
+        private Path stringToPath(String path)  {
+            try {
+                URI uri = new URI(path);
+                path = uri.getPath();
+                // Hack for Windows
+                if (path.startsWith("/") && path.contains(":"))
+                    path = path.substring(1);
+                return Path.of(path);
+            }
+            catch (URISyntaxException e) {
+                return null;
+            }
         }
 
         public Song buildSong() {
@@ -117,7 +133,7 @@ public class Song {
                         case PLAY_DATE_UTC -> playDateUTC = parseDate(value);
                         case PERSISTENT_ID -> persistentID = value;
                         case TRACK_TYPE -> trackType = value;
-                        case LOCATION -> location = Path.of(value);
+                        case LOCATION -> location = stringToPath(value);
                         case FILE_FOLDER_COUNT -> fileFolderCount = Integer.parseInt(value);
                         case LIBRARY_FOLDER_COUNT -> libraryFolderCount = Integer.parseInt(value);
                         case SKIP_COUNT -> skipCount = Integer.parseInt(value);
