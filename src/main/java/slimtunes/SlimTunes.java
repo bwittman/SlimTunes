@@ -35,7 +35,7 @@ public class SlimTunes extends JFrame {
         //songs.add(new Song(2, "Side to Side", "Blackalicious", "The Craft", null, -1, 176, -1, -1, -1, -1, 2005, 128, 44100, null));
         //ID, NAME, ARTIST, ALBUM, GENRE, SIZE, TIME, DISC, DISC_COUNT, TRACK, TRACK_COUNT, YEAR, BIT_RATE, SAMPLE_RATE, PATH;
         SongTableModel model = new SongTableModel(songs);
-        JTable table = new JTable(model) {
+        JTable table = new JTable(model);/* {
             //Implement table cell tool tips.
             public String getToolTipText(MouseEvent e) {
                 String tip = null;
@@ -50,26 +50,48 @@ public class SlimTunes extends JFrame {
                 return tip;
             }
         };
-
+        */
 
         JScrollPane pane = new JScrollPane(table);
-        add(pane, BorderLayout.CENTER);
-        setSize(800, 600);
+        JPanel listPanel = new JPanel(new BorderLayout());
+        listPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Song List"));
+        listPanel.add(pane, BorderLayout.CENTER);
+        add(listPanel, BorderLayout.CENTER);
+
+        JLabel songLabel = new JLabel();
+        songLabel.setPreferredSize(new Dimension(256, 256));
+        songLabel.setVerticalAlignment(SwingConstants.TOP);
+        JPanel songPanel = new JPanel(new BorderLayout());
+        songPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Selected Song"));
+        songPanel.add(songLabel, BorderLayout.CENTER);
+
+
+        add(songPanel, BorderLayout.EAST);
+
+
+
+        setSize(1024, 768);
         this.setLocationRelativeTo(null);
+
+
+
 
         /*
         JTextArea area = new JTextArea(10, 80);
         add(area, BorderLayout.SOUTH);
+*/
+        table.getSelectionModel().addListSelectionListener(event -> {
+            // do some actions here, for example
+            // print first column value from selected row
+            ;
 
-        table.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
-            public void valueChanged(ListSelectionEvent event) {
-                // do some actions here, for example
-                // print first column value from selected row
-                area.setText(songs.get(table.getSelectedRow()).toString());
-            }
+            if (table.getSelectedRowCount() > 1)
+                songLabel.setText(table.getSelectedRowCount() + " songs selected");
+            else if (table.getSelectedRowCount() == 1)
+                songLabel.setText("<html>" + songs.get(table.getSelectedRow()).toString().replaceAll("\n", "<br/>") + "</html>");
         });
 
-         */
+
         setVisible(true);
 
 
