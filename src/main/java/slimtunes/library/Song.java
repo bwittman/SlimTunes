@@ -43,10 +43,12 @@ public class Song {
         }
 
         private static LocalDateTime parseDate(String date) {
-            if (date.endsWith("Z"))
+            /*if (date.endsWith("Z"))
                 return LocalDateTime.parse(date.substring(0, date.length() - 1));
-            else
-                return LocalDateTime.parse(date);
+            else*/
+            return LocalDateTime.parse(date, DateTimeFormatter.ISO_DATE_TIME);
+
+
         }
 
         private Path stringToPath(String path)  {
@@ -494,7 +496,7 @@ public class Song {
     }
 
     public static String formatDate(LocalDateTime dateTime) {
-        return dateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + "Z";
+        return dateTime.format(DateTimeFormatter.ISO_DATE_TIME) + "Z";
     }
 
     private static void append(StringBuilder builder, String name, String value) {
@@ -550,7 +552,7 @@ public class Song {
         append(builder, "Play Date UTC", playDateUTC);
         append(builder, "Persistent ID", persistentID);
         append(builder, "Track Type", trackType);
-        append(builder, "Location", location); // TODO: Fix Path rendering
+        append(builder, "Location", location);
         append(builder, "File Folder Count", fileFolderCount);
         append(builder, "Library Folder Count", libraryFolderCount);
         append(builder, "Skip Count", skipCount);

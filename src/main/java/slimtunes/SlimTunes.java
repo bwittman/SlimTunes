@@ -44,8 +44,7 @@ public class SlimTunes extends JFrame {
 
                 try {
                     tip = "<html>" + songs.get(rowIndex).toString().replaceAll("\n", "<br/>") + "</html>";
-                } catch (RuntimeException e1) {
-                    //catch null pointer exception if mouse is over an empty line
+                } catch (RuntimeException ignore) {
                 }
 
                 return tip;
