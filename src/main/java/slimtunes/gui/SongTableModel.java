@@ -27,21 +27,7 @@ public class SongTableModel extends AbstractTableModel {
         return COLUMNS.length;
     }
 
-    private static String millisecondsToTime(int milliseconds) {
-        if (milliseconds == -1)
-            return "";
 
-        int seconds = milliseconds / 1000;
-
-        int hours = seconds / 3600;
-        int minutes = seconds % 3600 / 60;
-        seconds = seconds % 60;
-
-        if (hours >= 1)
-            return String.format("%d:%02d:%02d", hours, minutes, seconds);
-        else
-            return String.format("%d:%02d", minutes, seconds);
-    }
 
     private static String clean(Object input) {
         if (input == null)
@@ -76,7 +62,7 @@ public class SongTableModel extends AbstractTableModel {
             case NAME -> song.getName();
             case ARTIST -> song.getArtist();
             case SIZE -> song.getSize();
-            case TOTAL_TIME -> millisecondsToTime(song.getTotalTime());
+            case TOTAL_TIME -> Song.millisecondsToTime(song.getTotalTime());
             case BIT_RATE -> song.getBitRate();
             case LOCATION -> song.getLocation();
             case ALBUM -> song.getAlbum();

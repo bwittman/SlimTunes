@@ -17,10 +17,16 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 public class XML implements DictionaryProcessor {
-    private final Document document;
-    private Set<String> songFields = new LinkedHashSet<>();
+    private final Song.Builder builder = new Song.Builder();
+    private final Library library;
 
-    public XML(Path path) throws ParserConfigurationException, IOException, SAXException {
+    public XML(Library library) throws ParserConfigurationException, IOException, SAXException {
+
+        this.library = library;
+
+    }
+
+    public void load(Path path) throws ParserConfigurationException, IOException, SAXException {
         //Parser that produces DOM object trees from XML content
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
@@ -28,11 +34,11 @@ public class XML implements DictionaryProcessor {
         DocumentBuilder builder = factory.newDocumentBuilder();
 
         //Parse the content to Document object
-        document = builder.parse(new InputSource(new BufferedReader(new FileReader(path.toFile()))));
-    }
+        Document document = builder.parse(new InputSource(new BufferedReader(new FileReader(path.toFile()))));
 
-    public void load(Library library) {
-
+        Element plist = (Element) document.getElementsByTagName("plist").item(0);
+        Element dictionary = getFirstDictionary(plist);
+        processDictionary(dictionary, this);
     }
 
     @Override
@@ -51,16 +57,11 @@ public class XML implements DictionaryProcessor {
     }
 
     public void processSong(Element key, Element dictionary) {
-        processDictionary(dictionary, this::processSongFields);
+        builder.startBuilding();
+        processDictionary(dictionary, (k, v) -> builder.addField(k.getTextContent(), v.getTextContent()));
+        Song song = builder.buildSong();
+        library.putSong(song.getTrackId(), song);
     }
-
-    public void processSongFields(Element key, Element value) {
-
-
-
-        songFields.add(key.getTextContent());
-    }
-
 
     private static Element getFirstDictionary(Element parent) {
         NodeList children = parent.getChildNodes();
@@ -90,17 +91,4 @@ public class XML implements DictionaryProcessor {
             }
         }
     }
-
-    public void print() {
-        Element plist = (Element) document.getElementsByTagName("plist").item(0);
-        Element dictionary = getFirstDictionary(plist);
-        processDictionary(dictionary, this);
-
-        System.out.println("\nSong Fields");
-        for(String field : songFields) {
-            System.out.println(field);
-        }
-    }
-
-
 }
