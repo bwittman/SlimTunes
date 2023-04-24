@@ -2,9 +2,6 @@ package slimtunes.library;
 
 import java.io.*;
 import java.nio.file.Path;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Set;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -17,7 +14,8 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 public class XML implements DictionaryProcessor {
-    private final Song.Builder builder = new Song.Builder();
+    private final Song.Builder songBuilder = new Song.Builder();
+    private final Playlist.Builder playlistBuilder = new Playlist.Builder();
     private final Library library;
 
     public XML(Library library) throws ParserConfigurationException, IOException, SAXException {
@@ -45,6 +43,15 @@ public class XML implements DictionaryProcessor {
     public void handleKeyValue(Element key, Element value) {
         System.out.print("Key: " + key.getTextContent());
         if (key.getTextContent().equals("Playlists")) {
+            Element array = value;
+            NodeList playlists = array.getChildNodes();
+            for (int i = 0; i < playlists.getLength(); ++i) {
+                Node child = playlists.item(i);
+                if (child.getNodeName().equals("dict")) {
+                    Element dictionary = (Element) child;
+                    processDictionary(dictionary, this::processPlaylist);
+                }
+            }
             System.out.println();
         }
         else if(key.getTextContent().equals("Tracks")) {
@@ -56,12 +63,23 @@ public class XML implements DictionaryProcessor {
         }
     }
 
+
     public void processSong(Element key, Element dictionary) {
-        builder.startBuilding();
-        processDictionary(dictionary, (k, v) -> builder.addField(k.getTextContent(), v.getTextContent()));
-        Song song = builder.buildSong();
+        songBuilder.startBuilding();
+        processDictionary(dictionary, (k, v) -> songBuilder.addField(k.getTextContent(), v.getTextContent()));
+        Song song = songBuilder.buildSong();
         library.putSong(song.getTrackId(), song);
     }
+
+
+    public void processPlaylist(Element key, Element dictionary) {
+        playlistBuilder.startBuilding();
+        // TODO: Add new dictionary processing to handle arrays for playlist too
+        processDictionary(dictionary, (k, v) -> playlistBuilder.addField(k.getTextContent(), v.getTextContent()));
+        Playlist playlist = playlistBuilder.buildPlaylist();
+        library.putPlaylist(playlist.getName(), playlist);
+    }
+
 
     private static Element getFirstDictionary(Element parent) {
         NodeList children = parent.getChildNodes();
