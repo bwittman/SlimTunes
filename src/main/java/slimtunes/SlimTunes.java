@@ -27,6 +27,9 @@ public class SlimTunes extends JFrame {
         try {
             XML xml = new XML(library);
             xml.load(Path.of("Library.xml"));
+
+            library.printPlaylists();
+
         } catch (ParserConfigurationException | IOException | SAXException e) {
             throw new RuntimeException(e);
         }

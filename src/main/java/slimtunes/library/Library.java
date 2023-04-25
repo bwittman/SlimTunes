@@ -14,10 +14,19 @@ public class Library {
 
     public void putSong(int trackId, Song song) {
         songs.put(trackId, song);
+        if (song.getArtist() != null)
+            artists.add(song.getArtist());
+
     }
 
     public Song getSong(int trackId) {
         return songs.get(trackId);
     }
     public void putPlaylist(String name, Playlist playlist) { playlists.put(name, playlist); }
+
+
+    public void printPlaylists() {
+        for (String playlist : playlists.keySet())
+            System.out.println(playlist + ": " + playlists.get(playlist).getSongs().size());
+    }
 }

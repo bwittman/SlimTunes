@@ -48,8 +48,11 @@ public class XML implements DictionaryProcessor {
             for (int i = 0; i < playlists.getLength(); ++i) {
                 Node child = playlists.item(i);
                 if (child.getNodeName().equals("dict")) {
+                    playlistBuilder.startBuilding();
                     Element dictionary = (Element) child;
                     processDictionary(dictionary, this::processPlaylist);
+                    Playlist playlist = playlistBuilder.buildPlaylist();
+                    library.putPlaylist(playlist.getName(), playlist);
                 }
             }
             System.out.println();
@@ -71,14 +74,19 @@ public class XML implements DictionaryProcessor {
         library.putSong(song.getTrackId(), song);
     }
 
-    public void processPlaylistElement(Element key, Element value) {
-        if (key.getNodeName().equals("array")) {
-            NodeList children = key.getChildNodes();
+    public void processPlaylist(Element key, Element value) {
+        String name = key.getTextContent();
+        if (key.getTextContent().equals("Playlist Items")) {
+            Node node = key.getNextSibling();
+            while (!node.getNodeName().equals("array"))
+                node = node.getNextSibling();
+            Element array = (Element) node;
+            NodeList children = array.getChildNodes();
             for (int i = 0; i < children.getLength(); ++i) {
                 Node child = children.item(i);
                 if (child.getNodeName().equals("dict")) {
                     processDictionary((Element)child, (k,v) -> {
-                        int trackId = Integer.parseInt(k.getTextContent());
+                        int trackId = Integer.parseInt(v.getTextContent());
                         playlistBuilder.addSong(trackId, library.getSong(trackId));
                     });
                 }
@@ -87,18 +95,6 @@ public class XML implements DictionaryProcessor {
         else
             playlistBuilder.addField(key.getTextContent(), value.getTextContent());
     }
-
-
-
-
-    public void processPlaylist(Element key, Element dictionary) {
-        playlistBuilder.startBuilding();
-        // TODO: Add new dictionary processing to handle arrays for playlist too
-        processDictionary(dictionary, this::processPlaylistElement);
-        Playlist playlist = playlistBuilder.buildPlaylist();
-        library.putPlaylist(playlist.getName(), playlist);
-    }
-
 
     private static Element getFirstDictionary(Element parent) {
         NodeList children = parent.getChildNodes();

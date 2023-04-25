@@ -1,8 +1,6 @@
 package slimtunes.library;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 public class Playlist {
 
@@ -117,6 +115,10 @@ public class Playlist {
     private final boolean allItems;
 
     private final Map<Integer, Song> songs;
+
+    public List<Song> getSongs() {
+        return new ArrayList<>(songs.values());
+    }
 
     private Playlist(String name, String description, boolean master, int playlistId, String playlistPersistentId, int distinguishedKind, boolean music, boolean movies, boolean tvShows, boolean podcasts, boolean audiobooks, String smartInfo, String smartCriteria, boolean visible, boolean allItems, Map<Integer, Song> songs) {
         this.name = name;
