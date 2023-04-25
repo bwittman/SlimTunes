@@ -5,7 +5,7 @@ import java.util.*;
 public class Library {
     // Use of LinkedHashMap allows us to preserve order
     private final Map<Integer, Song> songs = new LinkedHashMap<>();
-    private final List<String> artists = new ArrayList<>();
+    private final Set<String> artists = new TreeSet<>();
     private final Map<String, Playlist> playlists = new LinkedHashMap<>();
 
     public List<Song> getSongs() {
@@ -16,5 +16,8 @@ public class Library {
         songs.put(trackId, song);
     }
 
+    public Song getSong(int trackId) {
+        return songs.get(trackId);
+    }
     public void putPlaylist(String name, Playlist playlist) { playlists.put(name, playlist); }
 }

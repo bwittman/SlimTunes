@@ -71,11 +71,30 @@ public class XML implements DictionaryProcessor {
         library.putSong(song.getTrackId(), song);
     }
 
+    public void processPlaylistElement(Element key, Element value) {
+        if (key.getNodeName().equals("array")) {
+            NodeList children = key.getChildNodes();
+            for (int i = 0; i < children.getLength(); ++i) {
+                Node child = children.item(i);
+                if (child.getNodeName().equals("dict")) {
+                    processDictionary((Element)child, (k,v) -> {
+                        int trackId = Integer.parseInt(k.getTextContent());
+                        playlistBuilder.addSong(trackId, library.getSong(trackId));
+                    });
+                }
+            }
+        }
+        else
+            playlistBuilder.addField(key.getTextContent(), value.getTextContent());
+    }
+
+
+
 
     public void processPlaylist(Element key, Element dictionary) {
         playlistBuilder.startBuilding();
         // TODO: Add new dictionary processing to handle arrays for playlist too
-        processDictionary(dictionary, (k, v) -> playlistBuilder.addField(k.getTextContent(), v.getTextContent()));
+        processDictionary(dictionary, this::processPlaylistElement);
         Playlist playlist = playlistBuilder.buildPlaylist();
         library.putPlaylist(playlist.getName(), playlist);
     }
