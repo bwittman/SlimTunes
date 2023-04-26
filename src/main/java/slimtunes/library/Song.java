@@ -1,9 +1,10 @@
 package slimtunes.library;
 
+import slimtunes.gui.Time;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
-import java.text.DateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
@@ -71,47 +72,47 @@ public class Song {
 
             building = false;
 
-            int trackId = -1;
+            Integer trackId = null;
             String name = null;
             String artist = null;
             String kind = null;
-            int size = -1; // bytes
-            int totalTime = -1; // seconds
+            Integer size = null; // bytes
+            Integer totalTime = null; // seconds
             LocalDateTime dateModified = null;
             LocalDateTime dateAdded = null;
-            int bitRate = -1;
-            int sampleRate = -1;
-            int playCount = -1;
-            long playDate = -1;
+            Integer bitRate = null;
+            Integer sampleRate = null;
+            Integer playCount = null;
+            Long playDate = null;
             LocalDateTime playDateUTC = null;
             String persistentID = null;
             String trackType = null;
             Path location = null;
-            int fileFolderCount = -1;
-            int libraryFolderCount = -1;
-            int skipCount = -1;
+            Integer fileFolderCount = null;
+            Integer libraryFolderCount = null;
+            Integer skipCount = null;
             LocalDateTime skipDate = null;
             String albumArtist = null;
             String composer = null;
             String album = null;
             String genre = null;
-            int trackNumber = -1;
-            int year = -1;
-            int trackCount = -1;
-            int artworkCount = -1;
+            Integer trackNumber = null;
+            Integer year = null;
+            Integer trackCount = null;
+            Integer artworkCount = null;
             String sortName = null;
             String comments = null;
-            int normalization = -1;
-            int bpm = -1;
+            Integer normalization = null;
+            Integer bpm = null;
             String sortAlbum = null;
             String sortAlbumArtist = null;
             String sortArtist = null;
-            int discNumber = -1;
-            int discCount = -1;
+            Integer discNumber = null;
+            Integer discCount = null;
             String grouping = null;
             String work = null;
             String sortComposer = null;
-            int volumeAdjustment = -1;
+            Integer volumeAdjustment = null;
             boolean compilation = false;
             boolean partOfGaplessAlbum = false;
 
@@ -179,7 +180,7 @@ public class Song {
 
 
 
-    public int getTrackId() {
+    public Integer getTrackId() {
         return trackId;
     }
 
@@ -195,11 +196,11 @@ public class Song {
         return kind;
     }
 
-    public int getSize() {
+    public Integer getSize() {
         return size;
     }
 
-    public int getTotalTime() {
+    public Integer getTotalTime() {
         return totalTime;
     }
 
@@ -211,19 +212,19 @@ public class Song {
         return dateAdded;
     }
 
-    public int getBitRate() {
+    public Integer getBitRate() {
         return bitRate;
     }
 
-    public int getSampleRate() {
+    public Integer getSampleRate() {
         return sampleRate;
     }
 
-    public int getPlayCount() {
+    public Integer getPlayCount() {
         return playCount;
     }
 
-    public long getPlayDate() {
+    public Long getPlayDate() {
         return playDate;
     }
 
@@ -243,15 +244,15 @@ public class Song {
         return location;
     }
 
-    public int getFileFolderCount() {
+    public Integer getFileFolderCount() {
         return fileFolderCount;
     }
 
-    public int getLibraryFolderCount() {
+    public Integer getLibraryFolderCount() {
         return libraryFolderCount;
     }
 
-    public int getSkipCount() {
+    public Integer getSkipCount() {
         return skipCount;
     }
 
@@ -275,19 +276,19 @@ public class Song {
         return genre;
     }
 
-    public int getTrackNumber() {
+    public Integer getTrackNumber() {
         return trackNumber;
     }
 
-    public int getYear() {
+    public Integer getYear() {
         return year;
     }
 
-    public int getTrackCount() {
+    public Integer getTrackCount() {
         return trackCount;
     }
 
-    public int getArtworkCount() {
+    public Integer getArtworkCount() {
         return artworkCount;
     }
 
@@ -299,11 +300,11 @@ public class Song {
         return comments;
     }
 
-    public int getNormalization() {
+    public Integer getNormalization() {
         return normalization;
     }
 
-    public int getBpm() {
+    public Integer getBpm() {
         return bpm;
     }
 
@@ -319,11 +320,11 @@ public class Song {
         return sortArtist;
     }
 
-    public int getDiscNumber() {
+    public Integer getDiscNumber() {
         return discNumber;
     }
 
-    public int getDiscCount() {
+    public Integer getDiscCount() {
         return discCount;
     }
 
@@ -339,7 +340,7 @@ public class Song {
         return sortComposer;
     }
 
-    public int getVolumeAdjustment() {
+    public Integer getVolumeAdjustment() {
         return volumeAdjustment;
     }
 
@@ -351,39 +352,24 @@ public class Song {
         return partOfGaplessAlbum;
     }
 
-    public static String millisecondsToTime(int milliseconds) {
-        if (milliseconds == -1)
-            return "";
-
-        int seconds = milliseconds / 1000;
-        int hours = seconds / 3600;
-        int minutes = seconds % 3600 / 60;
-        seconds = seconds % 60;
-
-        if (hours >= 1)
-            return String.format("%d:%02d:%02d", hours, minutes, seconds);
-        else
-            return String.format("%d:%02d", minutes, seconds);
-    }
-
-    private final int trackId;
+    private final Integer trackId;
     private final String name;
     private final String artist;
     private final String kind;
-    private final int size; // bytes
+    private final Integer size; // bytes
 
-    private final int totalTime; // seconds
+    private final Integer totalTime; // seconds
 
     private final LocalDateTime dateModified;
     private final LocalDateTime dateAdded;
 
-    private final int bitRate;
+    private final Integer bitRate;
 
-    private final int sampleRate;
+    private final Integer sampleRate;
 
-    private final int playCount;
+    private final Integer playCount;
 
-    private final long playDate;
+    private final Long playDate;
 
     private final LocalDateTime playDateUTC;
 
@@ -394,11 +380,11 @@ public class Song {
     private final Path location;
 
 
-    private final int fileFolderCount;
+    private final Integer fileFolderCount;
 
-    private final int libraryFolderCount;
+    private final Integer libraryFolderCount;
 
-    private final int skipCount;
+    private final Integer skipCount;
 
     private final LocalDateTime skipDate;
 
@@ -409,26 +395,26 @@ public class Song {
 
     private final String album;
     private final String genre;
-    private final int trackNumber;
-    private final int year;
+    private final Integer trackNumber;
+    private final Integer year;
 
-    private final int trackCount;
+    private final Integer trackCount;
 
-    private final int artworkCount;
+    private final Integer artworkCount;
 
     private final String sortName;
 
     private final String comments;
 
-    private final int normalization;
+    private final Integer normalization;
 
-    private final int bpm;
+    private final Integer bpm;
 
     private final String sortAlbum;
     private final String sortAlbumArtist;
     private final String sortArtist;
-    private final int discNumber;
-    private final int discCount;
+    private final Integer discNumber;
+    private final Integer discCount;
 
     private final String grouping;
 
@@ -436,19 +422,19 @@ public class Song {
 
     private final String sortComposer;
 
-    private final int volumeAdjustment;
+    private final Integer volumeAdjustment;
 
     private final boolean compilation;
 
     private final boolean partOfGaplessAlbum;
 
-    private Song(int trackId, String name, String artist, String kind, int size, int totalTime, LocalDateTime dateModified,
-                 LocalDateTime dateAdded, int bitRate, int sampleRate, int playCount, long playDate, LocalDateTime playDateUTC,
-                 String persistentID, String trackType, Path location, int fileFolderCount, int libraryFolderCount,
-                 int skipCount, LocalDateTime skipDate, String albumArtist, String composer, String album, String genre,
-                 int trackNumber, int year, int trackCount, int artworkCount, String sortName, String comments,
-                 int normalization, int bpm, String sortAlbum, String sortAlbumArtist, String sortArtist,
-                 int discNumber, int discCount, String grouping, String work, String sortComposer, int volumeAdjustment,
+    private Song(Integer trackId, String name, String artist, String kind, Integer size, Integer totalTime, LocalDateTime dateModified,
+                 LocalDateTime dateAdded, Integer bitRate, Integer sampleRate, Integer playCount, Long playDate, LocalDateTime playDateUTC,
+                 String persistentID, String trackType, Path location, Integer fileFolderCount, Integer libraryFolderCount,
+                 Integer skipCount, LocalDateTime skipDate, String albumArtist, String composer, String album, String genre,
+                 Integer trackNumber, Integer year, Integer trackCount, Integer artworkCount, String sortName, String comments,
+                 Integer normalization, Integer bpm, String sortAlbum, String sortAlbumArtist, String sortArtist,
+                 Integer discNumber, Integer discCount, String grouping, String work, String sortComposer, Integer volumeAdjustment,
                  boolean compilation, boolean partOfGaplessAlbum) {
         this.trackId = trackId;
         this.name = name;
@@ -499,14 +485,8 @@ public class Song {
         return dateTime.format(DateTimeFormatter.ISO_DATE_TIME) + "Z";
     }
 
-    private static void append(StringBuilder builder, String name, String value) {
+    private static void append(StringBuilder builder, String name, Object value) {
         if(value != null) {
-            builder.append(name).append(": ").append(value).append("\n");
-        }
-    }
-
-    private static void append(StringBuilder builder, String name, long value) {
-        if(value >= 0) {
             builder.append(name).append(": ").append(value).append("\n");
         }
     }
@@ -519,19 +499,13 @@ public class Song {
 
     private static void append(StringBuilder builder, String name, boolean value) {
         if(value) {
-            builder.append(name).append(": ").append(value).append("\n");
+            builder.append(name).append(": true\n");
         }
     }
 
-    private static void appendAsTime(StringBuilder builder, String name, int time) {
-        if(time >= 0) {
-            builder.append(name).append(": ").append(millisecondsToTime(time)).append("\n");
-        }
-    }
-
-    private static void append(StringBuilder builder, String name, Path path) {
-        if(path != null) {
-            builder.append(name).append(": ").append(path).append("\n");
+    private static void appendAsTime(StringBuilder builder, String name, Integer time) {
+        if(time != null) {
+            builder.append(name).append(": ").append(new Time(time)).append("\n");
         }
     }
 

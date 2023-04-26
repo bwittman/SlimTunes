@@ -38,6 +38,7 @@ public class SlimTunes extends JFrame {
         SongTableModel model = new SongTableModel(songs);
         JTable table = new JTable(model);
         SongTableModel.setWidths(table);
+        table.setAutoCreateRowSorter(true);
         /* {
             //Implement table cell tool tips.
             public String getToolTipText(MouseEvent e) {
@@ -96,10 +97,11 @@ public class SlimTunes extends JFrame {
                 songLabel.setText(table.getSelectedRowCount() + " songs selected");
             else if (table.getSelectedRowCount() == 1) {
                 int[] indices = playlists.getSelectedIndices();
+                int row = table.convertRowIndexToModel(table.getSelectedRow());
                 if (indices.length >= 1)
-                    songLabel.setText("<html>" + playlists.getSelectedValue().getSongs().get(table.getSelectedRow()).toString().replaceAll("\n", "<br/>") + "</html>");
+                    songLabel.setText("<html>" + playlists.getSelectedValue().getSongs().get(row).toString().replaceAll("\n", "<br/>") + "</html>");
                 else
-                    songLabel.setText("<html>" + songs.get(table.getSelectedRow()).toString().replaceAll("\n", "<br/>") + "</html>");
+                    songLabel.setText("<html>" + songs.get(row).toString().replaceAll("\n", "<br/>") + "</html>");
             }
             else
                 songLabel.setText("");

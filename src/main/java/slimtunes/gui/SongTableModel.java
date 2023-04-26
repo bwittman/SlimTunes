@@ -6,6 +6,7 @@ import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
+import java.time.LocalTime;
 import java.util.List;
 
 import static slimtunes.library.Song.Fields;
@@ -31,21 +32,15 @@ public class SongTableModel extends AbstractTableModel {
         return COLUMNS.length;
     }
 
-
-
-    private static String clean(Object input) {
-
-        if (input == null)
-            return "";
-        else if (input instanceof Integer) {
-            int value = (int) input;
-            if (value == -1)
-                return "";
-            else
-                return input.toString();
-        }
-        else
-            return input.toString();
+    @Override
+    public Class<?> getColumnClass(int columnIndex)
+    {
+        return switch (COLUMNS[columnIndex]) {
+            case TRACK_ID, TRACK_NUMBER, BIT_RATE, YEAR -> Integer.class;
+            case TOTAL_TIME -> LocalTime.class;
+            case NAME, ARTIST, ALBUM, GENRE -> String.class;
+            default -> Object.class;
+        };
     }
 
     public static void setWidths(JTable table) {
@@ -65,7 +60,7 @@ public class SongTableModel extends AbstractTableModel {
               case TOTAL_TIME -> {
                   column.setPreferredWidth(35);
                   column.setMinWidth(35);
-                  column.setMaxWidth(40);
+                  column.setMaxWidth(45); // In case of songs longer than an hour
                   column.setCellRenderer(center);
                   column.setHeaderRenderer(center);
               }
@@ -110,17 +105,17 @@ public class SongTableModel extends AbstractTableModel {
             return null;
 
         Song song = songs.get(rowIndex);
-        return clean(switch(COLUMNS[columnIndex]){
+        return switch(COLUMNS[columnIndex]){
             case TRACK_ID -> rowIndex + 1;
             case NAME -> song.getName();
             case ARTIST -> song.getArtist();
-            case TOTAL_TIME -> Song.millisecondsToTime(song.getTotalTime());
+            case TOTAL_TIME -> song.getTotalTime() == null ? null : new Time(song.getTotalTime());
             case BIT_RATE -> song.getBitRate();
             case ALBUM -> song.getAlbum();
             case GENRE -> song.getGenre();
             case TRACK_NUMBER -> song.getTrackNumber();
             case YEAR -> song.getYear();
             default -> "";
-        });
+        };
     }
 }
