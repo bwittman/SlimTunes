@@ -138,4 +138,9 @@ public class Playlist {
         this.allItems = allItems;
         this.songs = songs;
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

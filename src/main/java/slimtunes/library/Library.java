@@ -24,6 +24,7 @@ public class Library {
     }
     public void putPlaylist(String name, Playlist playlist) { playlists.put(name, playlist); }
 
+    public List<Playlist> getPlaylists() { return new ArrayList<>(playlists.values()); }
 
     public void printPlaylists() {
         for (String playlist : playlists.keySet())

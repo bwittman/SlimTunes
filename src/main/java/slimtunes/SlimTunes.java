@@ -3,6 +3,7 @@ package slimtunes;
 import org.xml.sax.SAXException;
 import slimtunes.gui.SongTableModel;
 import slimtunes.library.Library;
+import slimtunes.library.Playlist;
 import slimtunes.library.Song;
 import slimtunes.library.XML;
 
@@ -55,29 +56,37 @@ public class SlimTunes extends JFrame {
         };
         */
 
+        // Song table
         JScrollPane pane = new JScrollPane(table);
         JPanel listPanel = new JPanel(new BorderLayout());
         listPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Song List"));
         listPanel.add(pane, BorderLayout.CENTER);
         add(listPanel, BorderLayout.CENTER);
 
+        // Song information
         JLabel songLabel = new JLabel();
         songLabel.setPreferredSize(new Dimension(256, 256));
         songLabel.setVerticalAlignment(SwingConstants.TOP);
         JPanel songPanel = new JPanel(new BorderLayout());
         songPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Selected Song"));
         songPanel.add(songLabel, BorderLayout.CENTER);
-
-
         add(songPanel, BorderLayout.EAST);
 
+        //Playlists
+        DefaultListModel<Playlist> listModel = new DefaultListModel<>();
+        for (Playlist playlist : library.getPlaylists())
+            listModel.addElement(playlist);
+
+        JList<Playlist> playlists = new JList<>(listModel);
+        JScrollPane playlistScrollPane = new JScrollPane(playlists);
+        JPanel playlistPanel = new JPanel(new BorderLayout());
+        playlistPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Playlists"));
+        playlistPanel.add(playlistScrollPane, BorderLayout.CENTER);
+        add(playlistPanel, BorderLayout.WEST);
 
 
         setSize(1024, 768);
         this.setLocationRelativeTo(null);
-
-
-
 
         /*
         JTextArea area = new JTextArea(10, 80);
