@@ -8,11 +8,8 @@ import slimtunes.library.Song;
 import slimtunes.library.XML;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
-import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
@@ -39,7 +36,9 @@ public class SlimTunes extends JFrame {
         //songs.add(new Song(2, "Side to Side", "Blackalicious", "The Craft", null, -1, 176, -1, -1, -1, -1, 2005, 128, 44100, null));
         //ID, NAME, ARTIST, ALBUM, GENRE, SIZE, TIME, DISC, DISC_COUNT, TRACK, TRACK_COUNT, YEAR, BIT_RATE, SAMPLE_RATE, PATH;
         SongTableModel model = new SongTableModel(songs);
-        JTable table = new JTable(model);/* {
+        JTable table = new JTable(model);
+        SongTableModel.setWidths(table);
+        /* {
             //Implement table cell tool tips.
             public String getToolTipText(MouseEvent e) {
                 String tip = null;
@@ -112,6 +111,7 @@ public class SlimTunes extends JFrame {
                 table.setModel(new SongTableModel(playlists.getSelectedValue().getSongs()));
             else
                 table.setModel(new SongTableModel(library.getSongs()));
+            SongTableModel.setWidths(table);
         });
 
         setVisible(true);

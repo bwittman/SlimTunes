@@ -1,7 +1,11 @@
 package slimtunes.gui;
 
 import slimtunes.library.Song;
+
+import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumn;
 import java.util.List;
 
 import static slimtunes.library.Song.Fields;
@@ -30,6 +34,7 @@ public class SongTableModel extends AbstractTableModel {
 
 
     private static String clean(Object input) {
+
         if (input == null)
             return "";
         else if (input instanceof Integer) {
@@ -43,6 +48,44 @@ public class SongTableModel extends AbstractTableModel {
             return input.toString();
     }
 
+    public static void setWidths(JTable table) {
+        DefaultTableCellRenderer center = new DefaultTableCellRenderer();
+        center.setHorizontalAlignment(SwingConstants.CENTER);
+        DefaultTableCellRenderer right = new DefaultTableCellRenderer();
+        right.setHorizontalAlignment(SwingConstants.RIGHT);
+      for (int i = 0; i < COLUMNS.length; ++i) {
+          TableColumn column = table.getColumnModel().getColumn(i);
+          switch (COLUMNS[i]) {
+              case TRACK_ID -> {
+                  column.setPreferredWidth(30);
+                  column.setMinWidth(30);
+                  column.setMaxWidth(30);
+                  column.setCellRenderer(right);
+              }
+              case TOTAL_TIME -> {
+                  column.setPreferredWidth(35);
+                  column.setMinWidth(35);
+                  column.setMaxWidth(40);
+                  column.setCellRenderer(center);
+                  column.setHeaderRenderer(center);
+              }
+              case BIT_RATE, YEAR -> {
+                  column.setPreferredWidth(35);
+                  column.setMinWidth(35);
+                  column.setMaxWidth(35);
+                  column.setCellRenderer(center);
+                  column.setHeaderRenderer(center);
+              }
+              case TRACK_NUMBER -> {
+                  column.setPreferredWidth(20);
+                  column.setMaxWidth(25);
+                  column.setCellRenderer(center);
+                  column.setHeaderRenderer(center);
+              }
+          }
+      }
+    }
+
     @Override
     public String getColumnName(int column) {
         if (column < 0 || column >= getColumnCount())
@@ -52,10 +95,10 @@ public class SongTableModel extends AbstractTableModel {
             case NAME -> "Name";
             case ARTIST -> "Artist";
             case TOTAL_TIME -> "Time";
-            case BIT_RATE -> "Bit Rate";
+            case BIT_RATE -> "Rate";
             case ALBUM -> "Album";
             case GENRE -> "Genre";
-            case TRACK_NUMBER -> "Track";
+            case TRACK_NUMBER -> "#";
             case YEAR -> "Year";
             default -> "";
         };
