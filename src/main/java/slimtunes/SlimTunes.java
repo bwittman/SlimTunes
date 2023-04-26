@@ -93,20 +93,28 @@ public class SlimTunes extends JFrame {
         add(area, BorderLayout.SOUTH);
 */
         table.getSelectionModel().addListSelectionListener(event -> {
-            // do some actions here, for example
-            // print first column value from selected row
-            ;
-
             if (table.getSelectedRowCount() > 1)
                 songLabel.setText(table.getSelectedRowCount() + " songs selected");
-            else if (table.getSelectedRowCount() == 1)
-                songLabel.setText("<html>" + songs.get(table.getSelectedRow()).toString().replaceAll("\n", "<br/>") + "</html>");
+            else if (table.getSelectedRowCount() == 1) {
+                int[] indices = playlists.getSelectedIndices();
+                if (indices.length >= 1)
+                    songLabel.setText("<html>" + playlists.getSelectedValue().getSongs().get(table.getSelectedRow()).toString().replaceAll("\n", "<br/>") + "</html>");
+                else
+                    songLabel.setText("<html>" + songs.get(table.getSelectedRow()).toString().replaceAll("\n", "<br/>") + "</html>");
+            }
+            else
+                songLabel.setText("");
         });
 
+        playlists.getSelectionModel().addListSelectionListener(event ->{
+            int[] indices = playlists.getSelectedIndices();
+            if (indices.length >= 1)
+                table.setModel(new SongTableModel(playlists.getSelectedValue().getSongs()));
+            else
+                table.setModel(new SongTableModel(library.getSongs()));
+        });
 
         setVisible(true);
-
-
     }
 
 

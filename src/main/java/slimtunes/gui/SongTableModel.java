@@ -10,7 +10,7 @@ public class SongTableModel extends AbstractTableModel {
     List<Song> songs;
 
     private static final Song.Fields[] COLUMNS = new Fields[] {
-            Song.Fields.TRACK_ID, Song.Fields.NAME, Song.Fields.ARTIST, Song.Fields.SIZE, Song.Fields.TOTAL_TIME, Song.Fields.BIT_RATE, Song.Fields.ALBUM, Song.Fields.GENRE, Song.Fields.TRACK_NUMBER, Song.Fields.YEAR
+            Song.Fields.TRACK_ID, Song.Fields.NAME, Song.Fields.ARTIST, Song.Fields.ALBUM, Song.Fields.TRACK_NUMBER, Song.Fields.TOTAL_TIME, Song.Fields.BIT_RATE, Song.Fields.YEAR, Song.Fields.GENRE,
     };
 
     public SongTableModel(List<Song> songs) {
@@ -48,10 +48,17 @@ public class SongTableModel extends AbstractTableModel {
         if (column < 0 || column >= getColumnCount())
             return "";
 
-        if (column == 0)
-            return "Number";
-
-        return COLUMNS[column].toString();
+        return switch(COLUMNS[column]){
+            case NAME -> "Name";
+            case ARTIST -> "Artist";
+            case TOTAL_TIME -> "Time";
+            case BIT_RATE -> "Bit Rate";
+            case ALBUM -> "Album";
+            case GENRE -> "Genre";
+            case TRACK_NUMBER -> "Track";
+            case YEAR -> "Year";
+            default -> "";
+        };
     }
 
     @Override
@@ -64,7 +71,6 @@ public class SongTableModel extends AbstractTableModel {
             case TRACK_ID -> rowIndex + 1;
             case NAME -> song.getName();
             case ARTIST -> song.getArtist();
-            case SIZE -> song.getSize();
             case TOTAL_TIME -> Song.millisecondsToTime(song.getTotalTime());
             case BIT_RATE -> song.getBitRate();
             case ALBUM -> song.getAlbum();
