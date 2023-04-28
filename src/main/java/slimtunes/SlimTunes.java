@@ -5,7 +5,7 @@ import slimtunes.gui.SongTableModel;
 import slimtunes.library.Library;
 import slimtunes.library.Playlist;
 import slimtunes.library.Song;
-import slimtunes.library.XML;
+import slimtunes.library.xml.Reader;
 
 import javax.swing.*;
 import javax.xml.parsers.ParserConfigurationException;
@@ -23,8 +23,8 @@ public class SlimTunes extends JFrame {
 
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         try {
-            XML xml = new XML(library);
-            xml.load(Path.of("Library.xml"));
+            Reader reader = new Reader(library);
+            reader.load(Path.of("Library.xml"));
 
             library.printPlaylists();
 

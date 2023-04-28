@@ -1,4 +1,4 @@
-package slimtunes.library;
+package slimtunes.library.xml;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -12,13 +12,17 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import slimtunes.library.DictionaryProcessor;
+import slimtunes.library.Library;
+import slimtunes.library.Playlist;
+import slimtunes.library.Song;
 
-public class XML implements DictionaryProcessor {
+public class Reader implements DictionaryProcessor {
     private final Song.Builder songBuilder = new Song.Builder();
     private final Playlist.Builder playlistBuilder = new Playlist.Builder();
     private final Library library;
 
-    public XML(Library library) throws ParserConfigurationException, IOException, SAXException {
+    public Reader(Library library) throws ParserConfigurationException, IOException, SAXException {
 
         this.library = library;
 
