@@ -23,8 +23,8 @@ public class SlimTunes extends JFrame {
 
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         try {
-            Reader reader = new Reader(library);
-            reader.load(Path.of("Library.xml"));
+            Reader reader = new Reader();
+            reader.read(Path.of("Library.xml"), library);
 
             library.printPlaylists();
 
@@ -32,9 +32,6 @@ public class SlimTunes extends JFrame {
             throw new RuntimeException(e);
         }
         List<Song> songs = library.getSongs();
-        //songs.add(new Song(1, "Sweet Child of Mine", "Guns'n'Roses", "Appetite for Destruction", null, -1, 215, -1, -1, -1, -1, 1984, 128, 44100, null));
-        //songs.add(new Song(2, "Side to Side", "Blackalicious", "The Craft", null, -1, 176, -1, -1, -1, -1, 2005, 128, 44100, null));
-        //ID, NAME, ARTIST, ALBUM, GENRE, SIZE, TIME, DISC, DISC_COUNT, TRACK, TRACK_COUNT, YEAR, BIT_RATE, SAMPLE_RATE, PATH;
         SongTableModel model = new SongTableModel(songs);
         JTable table = new JTable(model);
         SongTableModel.setWidths(table);
@@ -84,14 +81,9 @@ public class SlimTunes extends JFrame {
         playlistPanel.add(playlistScrollPane, BorderLayout.CENTER);
         add(playlistPanel, BorderLayout.WEST);
 
-
         setSize(1024, 768);
         this.setLocationRelativeTo(null);
 
-        /*
-        JTextArea area = new JTextArea(10, 80);
-        add(area, BorderLayout.SOUTH);
-*/
         table.getSelectionModel().addListSelectionListener(event -> {
             if (table.getSelectedRowCount() > 1)
                 songLabel.setText(table.getSelectedRowCount() + " songs selected");

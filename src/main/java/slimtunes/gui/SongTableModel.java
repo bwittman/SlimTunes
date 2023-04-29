@@ -72,8 +72,8 @@ public class SongTableModel extends AbstractTableModel {
                   column.setHeaderRenderer(center);
               }
               case TRACK_NUMBER -> {
-                  column.setPreferredWidth(20);
-                  column.setMaxWidth(25);
+                  column.setPreferredWidth(25);
+                  column.setMaxWidth(30);
                   column.setCellRenderer(center);
                   column.setHeaderRenderer(center);
               }
