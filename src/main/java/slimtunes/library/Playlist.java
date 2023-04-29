@@ -1,8 +1,13 @@
 package slimtunes.library;
 
+import slimtunes.library.xml.WriteXML;
+import slimtunes.library.xml.Writer;
+
+import java.io.IOException;
 import java.util.*;
 
-public class Playlist {
+public class Playlist extends WriteXML {
+
 
     public enum Fields {
         NAME, DESCRIPTION, MASTER, PLAYLIST_ID, PLAYLIST_PERSISTENT_ID, DISTINGUISHED_KIND, MUSIC, MOVIES, TV_SHOWS, PODCASTS, AUDIOBOOKS, SMART_INFO, SMART_CRITERIA,  VISIBLE, ALL_ITEMS;
@@ -70,6 +75,39 @@ public class Playlist {
 
     public void addSong(int trackId, Song song) {
         songs.put(trackId, song);
+    }
+
+
+    @Override
+    public void write(Writer writer) {
+        write(writer, Fields.NAME, name);
+        write(writer, Fields.DESCRIPTION, description);
+        write(writer, Fields.MASTER, master);
+        write(writer, Fields.PLAYLIST_ID, playlistId);
+        write(writer, Fields.PLAYLIST_PERSISTENT_ID, playlistPersistentId);
+        write(writer, Fields.DISTINGUISHED_KIND, distinguishedKind);
+        write(writer, Fields.MUSIC, music);
+        write(writer, Fields.MOVIES, movies);
+        write(writer, Fields.TV_SHOWS, tvShows);
+        write(writer, Fields.VISIBLE, visible);
+        write(writer, Fields.PODCASTS, podcasts);
+        write(writer, Fields.AUDIOBOOKS, audiobooks);
+        write(writer, Fields.ALL_ITEMS, allItems);
+        if (smartInfo != null)
+            writer.keyData(Fields.SMART_INFO.toString(), smartInfo);
+        if (smartCriteria != null)
+            writer.keyData(Fields.SMART_CRITERIA.toString(), smartCriteria);
+
+        if (songs.size() > 0) {
+            writer.keyArray("Playlist Items"); // open array
+
+            for (Integer id : songs.keySet()) {
+                writer.dict(true);
+                writer.keyInteger("Track ID", id);
+                writer.dict(false);
+            }
+            writer.array(false);
+        }
     }
 
 

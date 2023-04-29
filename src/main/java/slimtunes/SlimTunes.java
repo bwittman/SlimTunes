@@ -6,6 +6,7 @@ import slimtunes.library.Library;
 import slimtunes.library.Playlist;
 import slimtunes.library.Song;
 import slimtunes.library.xml.Reader;
+import slimtunes.library.xml.Writer;
 
 import javax.swing.*;
 import javax.xml.parsers.ParserConfigurationException;
@@ -28,6 +29,9 @@ public class SlimTunes extends JFrame {
 
             library.printPlaylists();
 
+            Writer writer = new Writer(Path.of("Library2.xml"));
+            library.write(writer);
+            writer.close();
         } catch (ParserConfigurationException | IOException | SAXException e) {
             throw new RuntimeException(e);
         }

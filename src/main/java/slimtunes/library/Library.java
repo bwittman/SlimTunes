@@ -1,5 +1,6 @@
 package slimtunes.library;
 
+import slimtunes.library.xml.WriteXML;
 import slimtunes.library.xml.Writer;
 
 import java.io.IOException;
@@ -10,7 +11,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-public class Library {
+public class Library extends WriteXML {
 
     public enum Fields {
         MAJOR_VERSION, MINOR_VERSION, DATE, APPLICATION_VERSION, FEATURES, SHOW_CONTENT_RATINGS, MUSIC_FOLDER, LIBRARY_PERSISTENT_ID;
@@ -93,19 +94,46 @@ public class Library {
             artists.add(song.getArtist());
     }
 
-    public void save(Path path) throws IOException {
-        Writer writer = new Writer(path);
+    public void write(Writer writer) {
         writer.writePreamble();
         writer.plist(true);
         writer.dict(true);
 
-        // TODO: Finish this
+        write(writer, Fields.MAJOR_VERSION, majorVersion);
+        write(writer, Fields.MINOR_VERSION, minorVersion);
+        write(writer, Fields.DATE, date);
+        write(writer, Fields.APPLICATION_VERSION, applicationVersion);
+        write(writer, Fields.FEATURES, features);
+        write(writer, Fields.SHOW_CONTENT_RATINGS, showContentRatings);
+        write(writer, Fields.MUSIC_FOLDER, musicFolder);
+        write(writer, Fields.LIBRARY_PERSISTENT_ID, libraryPersistentId);
 
+        writer.keyDict("Tracks"); // open dict
+
+            for (Map.Entry<Integer, Song> entry : songs.entrySet()) {
+                writer.keyDict(entry.getKey().toString()); // open dict
+                entry.getValue().write(writer);
+                writer.dict(false);
+            }
+
+        writer.dict(false);
+
+        writer.keyArray("Playlists"); // open dict
+
+        for (Map.Entry<String, Playlist> entry : playlists.entrySet()) {
+            writer.keyDict(entry.getKey()); // open dict
+            entry.getValue().write(writer);
+            writer.dict(false);
+        }
+
+        writer.array(false);
 
         writer.dict(false);
         writer.plist(false);
         writer.close();
     }
+
+
 
     public Song getSong(int trackId) {
         return songs.get(trackId);

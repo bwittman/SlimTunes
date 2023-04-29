@@ -1,5 +1,6 @@
 package slimtunes.library.xml;
 
+import com.drew.lang.annotations.NotNull;
 import slimtunes.library.Library;
 import slimtunes.library.Song;
 
@@ -58,51 +59,51 @@ public class Writer {
     }
 
     public Writer keyDict(String key) {
-        writer.println("<key" + key + "</key>");
+        writer.println(indent + "<key>" + key + "</key>");
         return dict(true);
     }
 
     public Writer keyArray(String key) {
-        writer.println("<key" + key + "</key>");
+        writer.println(indent + "<key>" + key + "</key>");
         return array(true);
     }
 
-    public Writer keyInt(String key, int value) {
-        writer.println("<key" + key + "</key><integer>" + value + "</integer>");
+    public Writer keyInteger(String key, Integer value) {
+        writer.println(indent + "<key>" + key + "</key><integer>" + value + "</integer>");
+        return this;
+    }
+
+    public Writer keyBoolean(String key, Boolean value) {
+        writer.println(indent + "<key>" + key + "</key><" + value + "/>");
         return this;
     }
 
     public Writer keyString(String key, String value) {
-        writer.println("<key" + key + "</key><string>" + value + "</string>");
+        writer.println(indent + "<key>" + key + "</key><string>" + value + "</string>");
         return this;
     }
 
     public Writer keyDate(String key, LocalDateTime date) {
-        writer.println("<key" + key + "</key><date>" + Library.formatDate(date) + "</date>");
+        writer.println(indent + "<key>" + key + "</key><date>" + Library.formatDate(date) + "</date>");
+        return this;
+    }
+
+    public Writer keyData(String key, String data) {
+        writer.println(indent + "<key>" + key + "</key>");
+        writer.println(indent + "<data>");
+        writer.println(indent + data);
+        writer.println(indent + "</data>");
         return this;
     }
 
 
     public Writer keyPath(String key, Path path) {
         String string = path.toString();
-        writer.println("<key" + key + "</key><string>file://localhost" + (string.startsWith("/") ? "" : "/") +  string + "</string>");
+        writer.println(indent + "<key>" + key + "</key><string>file://localhost" + (string.startsWith("/") ? "" : "/") + string + "</string>");
         return this;
     }
-
-    public Writer keyBoolean(String key, int value) {
-        writer.println("<key" + key + "</key><" + value + "/>");
-        return this;
-    }
-
-
-
-
-
-
-
 
     public void close() {
         writer.close();
     }
-
 }

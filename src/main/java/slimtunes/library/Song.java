@@ -1,7 +1,10 @@
 package slimtunes.library;
 
 import slimtunes.gui.Time;
+import slimtunes.library.xml.WriteXML;
+import slimtunes.library.xml.Writer;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -11,7 +14,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Song {
+public class Song extends WriteXML {
 
 
 
@@ -212,6 +215,61 @@ public class Song {
 
     public Integer getYear() {
         return year;
+    }
+
+    public void write(Writer writer) {
+        write(writer, Fields.TRACK_ID, trackId);
+        write(writer, Fields.NAME, name);
+        write(writer, Fields.ARTIST, artist);
+
+        write(writer, Fields.ALBUM_ARTIST, albumArtist); // optional
+        write(writer, Fields.COMPOSER, composer); // optional
+        write(writer, Fields.ALBUM, album); // optional
+        write(writer, Fields.GROUPING, grouping); // optional
+        write(writer, Fields.WORK, work); // optional
+        write(writer, Fields.GENRE, genre); // optional
+
+        write(writer, Fields.KIND, kind);
+        write(writer, Fields.SIZE, size);
+        write(writer, Fields.TOTAL_TIME, totalTime);
+
+        write(writer, Fields.DISC_NUMBER, discNumber); // optional
+        write(writer, Fields.DISC_COUNT, discCount); // optional
+
+        write(writer, Fields.TRACK_NUMBER, trackNumber); // optional
+        write(writer, Fields.TRACK_COUNT, trackCount); // optional
+        write(writer, Fields.YEAR, year); // optional
+        write(writer, Fields.BPM, bpm); // optional
+
+        write(writer, Fields.DATE_MODIFIED, dateModified);
+        write(writer, Fields.DATE_ADDED, dateAdded);
+        write(writer, Fields.BIT_RATE, bitRate);
+        write(writer, Fields.SAMPLE_RATE, sampleRate);
+
+        write(writer, Fields.VOLUME_ADJUSTMENT, volumeAdjustment); // optional
+        write(writer, Fields.PART_OF_GAPLESS_ALBUM, partOfGaplessAlbum); // optional
+        write(writer, Fields.COMMENTS, comments); // optional
+
+        write(writer, Fields.PLAY_COUNT, playCount);
+        write(writer, Fields.PLAY_DATE, playDate);
+        write(writer, Fields.PLAY_DATE_UTC, playDateUTC);
+
+        write(writer, Fields.SKIP_COUNT, skipCount); // optional
+        write(writer, Fields.SKIP_DATE, skipDate); // optional
+        write(writer, Fields.NORMALIZATION, normalization); // optional
+        write(writer, Fields.COMPILATION, compilation); // optional
+        write(writer, Fields.ARTWORK_COUNT, artworkCount); // optional
+        write(writer, Fields.SORT_NAME, sortName); // optional
+        write(writer, Fields.SORT_ALBUM, sortAlbum); // optional
+        write(writer, Fields.SORT_ALBUM_ARTIST, sortAlbumArtist); // optional
+        write(writer, Fields.SORT_ARTIST, sortArtist); // optional
+        write(writer, Fields.SORT_COMPOSER, sortComposer); // optional
+
+        write(writer, Fields.PERSISTENT_ID, persistentID);
+        write(writer, Fields.TRACK_TYPE, trackType);
+        write(writer, Fields.LOCATION, location);
+        write(writer, Fields.FILE_FOLDER_COUNT, fileFolderCount);
+        write(writer, Fields.LIBRARY_FOLDER_COUNT, libraryFolderCount);
     }
 
     public String toString() {
