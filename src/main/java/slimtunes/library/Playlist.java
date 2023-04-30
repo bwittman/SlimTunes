@@ -25,9 +25,7 @@ public class Playlist extends WriteXML {
     }
 
         public void addField(String key, String value) {
-            key = key.trim();
-            value = value.trim();
-            Fields field = Fields.valueOf(Fields.nameToValue(key));
+            Fields field = Fields.valueOf(Fields.nameToValue(key.trim()));
             switch (field)  {
                 case NAME -> name = value;
                 case DESCRIPTION -> description = value;
@@ -40,8 +38,8 @@ public class Playlist extends WriteXML {
                 case TV_SHOWS -> tvShows = Boolean.parseBoolean(value);
                 case PODCASTS -> podcasts = Boolean.parseBoolean(value);
                 case AUDIOBOOKS -> audiobooks = Boolean.parseBoolean(value);
-                case SMART_INFO -> smartInfo = value;
-                case SMART_CRITERIA -> smartCriteria = value;
+                case SMART_INFO -> smartInfo = Library.cleanData(value);
+                case SMART_CRITERIA -> smartCriteria = Library.cleanData(value);
                 case VISIBLE -> visible = Boolean.parseBoolean(value);
                 case ALL_ITEMS -> allItems = Boolean.parseBoolean(value);
             }
@@ -67,16 +65,15 @@ public class Playlist extends WriteXML {
     private Boolean visible;
     private Boolean allItems;
 
-    private final Map<Integer, Song> songs = new LinkedHashMap<>();
+    private final List<Song> songs = new ArrayList<>();
 
     public List<Song> getSongs() {
-        return new ArrayList<>(songs.values());
+        return songs;
     }
 
-    public void addSong(int trackId, Song song) {
-        songs.put(trackId, song);
+    public void addSong(Song song) {
+        songs.add(song);
     }
-
 
     @Override
     public void write(Writer writer) {
@@ -101,9 +98,9 @@ public class Playlist extends WriteXML {
         if (songs.size() > 0) {
             writer.keyArray("Playlist Items"); // open array
 
-            for (Integer id : songs.keySet()) {
+            for (Song song : songs) {
                 writer.dict(true);
-                writer.keyInteger("Track ID", id);
+                writer.keyInteger("Track ID", Long.valueOf(song.getTrackId()));
                 writer.dict(false);
             }
             writer.array(false);

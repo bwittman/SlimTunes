@@ -1,8 +1,6 @@
 package slimtunes.library.xml;
 
-import com.drew.lang.annotations.NotNull;
 import slimtunes.library.Library;
-import slimtunes.library.Song;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -35,11 +33,15 @@ public class Writer {
     }
 
     public Writer dict(boolean open) {
-        if (open)
+        if (open) {
             writer.println(indent + "<dict>");
-        else
+            indent(open);
+        }
+        else {
+            indent(open);
             writer.println(indent + "</dict>");
-        return indent(open);
+        }
+        return this;
     }
 
     private Writer indent(boolean open) {
@@ -51,11 +53,15 @@ public class Writer {
     }
 
     public Writer array(boolean open) {
-        if (open)
+        if (open) {
             writer.println(indent + "<array>");
-        else
+            indent(open);
+        }
+        else {
+            indent(open);
             writer.println(indent + "</array>");
-        return indent(open);
+        }
+        return this;
     }
 
     public Writer keyDict(String key) {
@@ -68,7 +74,7 @@ public class Writer {
         return array(true);
     }
 
-    public Writer keyInteger(String key, Integer value) {
+    public Writer keyInteger(String key, Long value) {
         writer.println(indent + "<key>" + key + "</key><integer>" + value + "</integer>");
         return this;
     }
@@ -78,8 +84,32 @@ public class Writer {
         return this;
     }
 
+    public static String escapeXML(String s) {
+        StringBuilder out = new StringBuilder(Math.max(16, s.length()));
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == '<' || c == '>' || c == '&') {
+                out.append("&#");
+                out.append((int) c);
+                out.append(';');
+            } else {
+                out.append(c);
+            }
+        }
+        return out.toString();
+    }
+
     public Writer keyString(String key, String value) {
-        writer.println(indent + "<key>" + key + "</key><string>" + value + "</string>");
+        writer.println(indent + "<key>" + key + "</key><string>" + escapeXML(value) + "</string>");
+        return this;
+    }
+
+    public Writer keyMultilineString(String key, String value) {
+        String[] lines = escapeXML(value).split("\n");
+        writer.print(indent + "<key>" + key + "</key><string>");
+        for (int i = 0; i < lines.length - 1; ++i)
+            writer.println(lines[i]);
+        writer.println(lines[lines.length - 1] + "</string>");
         return this;
     }
 
@@ -91,15 +121,17 @@ public class Writer {
     public Writer keyData(String key, String data) {
         writer.println(indent + "<key>" + key + "</key>");
         writer.println(indent + "<data>");
-        writer.println(indent + data);
+        String[] lines = data.split("\n");
+        for (String line : lines)
+            writer.println(indent + line);
         writer.println(indent + "</data>");
         return this;
     }
 
 
     public Writer keyPath(String key, Path path) {
-        String string = path.toString();
-        writer.println(indent + "<key>" + key + "</key><string>file://localhost" + (string.startsWith("/") ? "" : "/") + string + "</string>");
+        String string = Library.pathToString(path);
+        writer.println(indent + "<key>" + key + "</key><string>" + string + "</string>");
         return this;
     }
 

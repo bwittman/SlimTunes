@@ -3,7 +3,6 @@ package slimtunes.library;
 import slimtunes.library.xml.WriteXML;
 import slimtunes.library.xml.Writer;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -41,12 +40,10 @@ public class Library extends WriteXML {
     // Use of LinkedHashMap allows us to preserve order
     private final Map<Integer, Song> songs = new LinkedHashMap<>();
     private final Set<String> artists = new TreeSet<>();
-    private final Map<String, Playlist> playlists = new LinkedHashMap<>();
+    private final List<Playlist> playlists = new ArrayList<>();
 
     public void addField(String key, String value) {
-        key = key.trim();
-        value = value.trim();
-        Library.Fields field = Library.Fields.valueOf(Library.Fields.nameToValue(key));
+        Library.Fields field = Library.Fields.valueOf(Library.Fields.nameToValue(key.trim()));
         switch (field) {
             case MAJOR_VERSION -> majorVersion = Integer.parseInt(value);
             case MINOR_VERSION -> minorVersion = Integer.parseInt(value);
@@ -73,15 +70,30 @@ public class Library extends WriteXML {
         }
     }
 
+    public static String pathToString(Path path)  {
+        try {
+            URI uri = path.toUri();
+            uri = new URI(uri.getScheme(), "localhost", uri.getPath(), null, null);
+            return Writer.escapeXML(uri.toASCIIString());
+        }
+        catch (URISyntaxException e) {
+            return null;
+        }
+    }
+
     public static LocalDateTime parseDate(String date) {
-            /*if (date.endsWith("Z"))
-                return LocalDateTime.parse(date.substring(0, date.length() - 1));
-            else*/
         return LocalDateTime.parse(date, DateTimeFormatter.ISO_DATE_TIME);
     }
 
     public static String formatDate(LocalDateTime dateTime) {
         return dateTime.format(DateTimeFormatter.ISO_DATE_TIME) + "Z";
+    }
+    public static String cleanData(String data) {
+        return data.trim().replaceAll("\t", "");
+    }
+
+    public static String cleanComments(String comment) {
+        return comment.replaceAll("\r\n", "\n");
     }
 
     public List<Song> getSongs() {
@@ -120,9 +132,9 @@ public class Library extends WriteXML {
 
         writer.keyArray("Playlists"); // open dict
 
-        for (Map.Entry<String, Playlist> entry : playlists.entrySet()) {
-            writer.keyDict(entry.getKey()); // open dict
-            entry.getValue().write(writer);
+        for (Playlist playlist : playlists) {
+            writer.dict(true); // open dict
+            playlist.write(writer);
             writer.dict(false);
         }
 
@@ -138,13 +150,12 @@ public class Library extends WriteXML {
     public Song getSong(int trackId) {
         return songs.get(trackId);
     }
-    public void putPlaylist(String name, Playlist playlist) { playlists.put(name, playlist); }
+    public void addPlaylist(Playlist playlist) { playlists.add(playlist); }
 
-    public List<Playlist> getPlaylists() { return new ArrayList<>(playlists.values()); }
-    public Playlist getPlaylist(String name) { return playlists.get(name); }
+    public List<Playlist> getPlaylists() { return playlists; }
 
     public void printPlaylists() {
-        for (String playlist : playlists.keySet())
-            System.out.println(playlist + ": " + playlists.get(playlist).getSongs().size());
+        for (Playlist playlist : playlists)
+            System.out.println(playlist.getName() + ": " + playlist.getSongs().size());
     }
 }

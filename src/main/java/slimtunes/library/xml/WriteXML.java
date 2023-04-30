@@ -10,7 +10,9 @@ public abstract class WriteXML {
     protected void write(Writer writer, Object key, Object value) {
         String keyName = key.toString();
         if (value instanceof Integer)
-            writer.keyInteger(keyName, (Integer) value);
+            writer.keyInteger(keyName, Long.valueOf((Integer) value));
+        else if(value instanceof Long)
+            writer.keyInteger(keyName, (Long) value);
         else if(value instanceof LocalDateTime)
             writer.keyDate(keyName, (LocalDateTime) value);
         else if(value instanceof String)
@@ -19,6 +21,7 @@ public abstract class WriteXML {
             writer.keyBoolean(keyName, (Boolean) value);
         else if(value instanceof Path)
             writer.keyPath(keyName, (Path)value);
+
         // Otherwise, nothing gets written (meaning null values)
     }
 

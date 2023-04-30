@@ -4,15 +4,8 @@ import slimtunes.gui.Time;
 import slimtunes.library.xml.WriteXML;
 import slimtunes.library.xml.Writer;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Song extends WriteXML {
 
@@ -34,9 +27,7 @@ public class Song extends WriteXML {
     }
 
     public void addField(String key, String value) {
-        key = key.trim();
-        value = value.trim();
-        Fields field = Fields.valueOf(Fields.nameToValue(key));
+        Fields field = Fields.valueOf(Fields.nameToValue(key.trim()));
         switch (field) {
             case TRACK_ID -> trackId = Integer.parseInt(value);
             case NAME -> name = value;
@@ -67,7 +58,7 @@ public class Song extends WriteXML {
             case TRACK_COUNT -> trackCount = Integer.parseInt(value);
             case ARTWORK_COUNT -> artworkCount = Integer.parseInt(value);
             case SORT_NAME -> sortName = value;
-            case COMMENTS -> comments = value;
+            case COMMENTS -> comments = value.replaceAll("\n", System.lineSeparator());
             case NORMALIZATION -> normalization = Integer.parseInt(value);
             case BPM -> bpm = Integer.parseInt(value);
             case SORT_ALBUM -> sortAlbum = value;
@@ -248,7 +239,10 @@ public class Song extends WriteXML {
 
         write(writer, Fields.VOLUME_ADJUSTMENT, volumeAdjustment); // optional
         write(writer, Fields.PART_OF_GAPLESS_ALBUM, partOfGaplessAlbum); // optional
-        write(writer, Fields.COMMENTS, comments); // optional
+
+        write(writer,Fields.COMMENTS, comments); // optional
+        //if (comments != null)
+          //  writer.keyMultilineString(Fields.COMMENTS.toString(), comments); // optional
 
         write(writer, Fields.PLAY_COUNT, playCount);
         write(writer, Fields.PLAY_DATE, playDate);
@@ -259,11 +253,11 @@ public class Song extends WriteXML {
         write(writer, Fields.NORMALIZATION, normalization); // optional
         write(writer, Fields.COMPILATION, compilation); // optional
         write(writer, Fields.ARTWORK_COUNT, artworkCount); // optional
-        write(writer, Fields.SORT_NAME, sortName); // optional
         write(writer, Fields.SORT_ALBUM, sortAlbum); // optional
         write(writer, Fields.SORT_ALBUM_ARTIST, sortAlbumArtist); // optional
         write(writer, Fields.SORT_ARTIST, sortArtist); // optional
         write(writer, Fields.SORT_COMPOSER, sortComposer); // optional
+        write(writer, Fields.SORT_NAME, sortName); // optional
 
         write(writer, Fields.PERSISTENT_ID, persistentID);
         write(writer, Fields.TRACK_TYPE, trackType);

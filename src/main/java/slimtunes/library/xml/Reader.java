@@ -45,7 +45,6 @@ public class Reader implements DictionaryProcessor {
 
     @Override
     public void handleKeyValue(Element key, Element value) {
-        System.out.print("Key: " + key.getTextContent());
         if (key.getTextContent().equals("Playlists")) {
             Element array = value;
             NodeList playlists = array.getChildNodes();
@@ -55,7 +54,7 @@ public class Reader implements DictionaryProcessor {
                     Element dictionary = (Element) child;
                     currentPlaylist = new Playlist();
                     processDictionary(dictionary, this::processPlaylist);
-                    currentLibrary.putPlaylist(currentPlaylist.getName(), currentPlaylist);
+                    currentLibrary.addPlaylist(currentPlaylist);
                 }
             }
             System.out.println();
@@ -97,7 +96,7 @@ public class Reader implements DictionaryProcessor {
                 if (child.getNodeName().equals("dict")) {
                     processDictionary((Element)child, (k,v) -> {
                         int trackId = Integer.parseInt(v.getTextContent());
-                        currentPlaylist.addSong(trackId, currentLibrary.getSong(trackId));
+                        currentPlaylist.addSong(currentLibrary.getSong(trackId));
                     });
                 }
             }
