@@ -1,6 +1,6 @@
-package slimtunes.library.xml;
+package slimtunes.model.xml;
 
-import slimtunes.library.Library;
+import slimtunes.model.Library;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;

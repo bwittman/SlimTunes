@@ -1,4 +1,4 @@
-package slimtunes.library;
+package slimtunes.model;
 
 import org.w3c.dom.Element;
 

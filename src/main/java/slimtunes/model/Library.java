@@ -1,7 +1,7 @@
-package slimtunes.library;
+package slimtunes.model;
 
-import slimtunes.library.xml.WriteXML;
-import slimtunes.library.xml.Writer;
+import slimtunes.model.xml.WriteXML;
+import slimtunes.model.xml.Writer;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -153,9 +153,4 @@ public class Library extends WriteXML {
     public void addPlaylist(Playlist playlist) { playlists.add(playlist); }
 
     public List<Playlist> getPlaylists() { return playlists; }
-
-    public void printPlaylists() {
-        for (Playlist playlist : playlists)
-            System.out.println(playlist.getName() + ": " + playlist.getSongs().size());
-    }
 }

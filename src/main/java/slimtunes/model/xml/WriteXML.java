@@ -1,6 +1,5 @@
-package slimtunes.library.xml;
+package slimtunes.model.xml;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 

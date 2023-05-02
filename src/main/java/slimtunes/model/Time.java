@@ -1,4 +1,4 @@
-package slimtunes.gui;
+package slimtunes.model;
 public class Time implements Comparable<Time> {
     private int milliseconds;
 

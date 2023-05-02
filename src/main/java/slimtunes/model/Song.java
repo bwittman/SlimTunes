@@ -1,8 +1,7 @@
-package slimtunes.library;
+package slimtunes.model;
 
-import slimtunes.gui.Time;
-import slimtunes.library.xml.WriteXML;
-import slimtunes.library.xml.Writer;
+import slimtunes.model.xml.WriteXML;
+import slimtunes.model.xml.Writer;
 
 import java.nio.file.Path;
 import java.time.LocalDateTime;

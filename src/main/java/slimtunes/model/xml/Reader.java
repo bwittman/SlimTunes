@@ -1,7 +1,6 @@
-package slimtunes.library.xml;
+package slimtunes.model.xml;
 
 import java.io.*;
-import java.lang.reflect.Field;
 import java.nio.file.Path;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -13,7 +12,10 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import slimtunes.library.*;
+import slimtunes.model.DictionaryProcessor;
+import slimtunes.model.Library;
+import slimtunes.model.Playlist;
+import slimtunes.model.Song;
 
 public class Reader implements DictionaryProcessor {
 
@@ -46,8 +48,7 @@ public class Reader implements DictionaryProcessor {
     @Override
     public void handleKeyValue(Element key, Element value) {
         if (key.getTextContent().equals("Playlists")) {
-            Element array = value;
-            NodeList playlists = array.getChildNodes();
+            NodeList playlists = value.getChildNodes();
             for (int i = 0; i < playlists.getLength(); ++i) {
                 Node child = playlists.item(i);
                 if (child.getNodeName().equals("dict")) {
@@ -63,10 +64,8 @@ public class Reader implements DictionaryProcessor {
             processDictionary(value, this::processSong);
             System.out.println();
         }
-        else {
+        else
             currentLibrary.addField(key.getTextContent(), getContent(value));
-            System.out.println(", Value: " + value.getTextContent());
-        }
     }
 
     private static String getContent(Element element) {

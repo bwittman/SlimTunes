@@ -1,9 +1,8 @@
-package slimtunes.library;
+package slimtunes.model;
 
-import slimtunes.library.xml.WriteXML;
-import slimtunes.library.xml.Writer;
+import slimtunes.model.xml.WriteXML;
+import slimtunes.model.xml.Writer;
 
-import java.io.IOException;
 import java.util.*;
 
 public class Playlist extends WriteXML {

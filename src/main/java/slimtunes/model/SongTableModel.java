@@ -1,6 +1,4 @@
-package slimtunes.gui;
-
-import slimtunes.library.Song;
+package slimtunes.model;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -9,7 +7,7 @@ import javax.swing.table.TableColumn;
 import java.time.LocalTime;
 import java.util.List;
 
-import static slimtunes.library.Song.Fields;
+import static slimtunes.model.Song.Fields;
 
 public class SongTableModel extends AbstractTableModel {
     List<Song> songs;
