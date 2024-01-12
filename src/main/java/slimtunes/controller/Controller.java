@@ -9,16 +9,18 @@ import slimtunes.model.xml.Reader;
 import slimtunes.view.SlimTunes;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.table.TableRowSorter;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.List;
 
 public class Controller {
 
-    private SlimTunes slimTunes;
+    private final SlimTunes slimTunes;
     private Library library;
 
     private boolean changed = false;
@@ -48,6 +50,47 @@ public class Controller {
         setPlaylistSelection();
         setSongSelection();
         setMenus();
+        setSearchBar();
+    }
+
+    private void setSearchBar() {
+        JTextField searchBar = slimTunes.getSearchBar();
+        searchBar.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                search();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                search();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                search();
+            }
+        });
+    }
+
+    private void search() {
+        if(library.getSongs().size() > 0) {
+            RowFilter<SongTableModel, Object> filter = null;
+            String text = slimTunes.getSearchBar().getText().trim().toLowerCase();
+            if (!text.isEmpty()) {
+                filter = new RowFilter<>() {
+                    @Override
+                    public boolean include(Entry<? extends SongTableModel, ?> entry) {
+                        return entry.getStringValue(Song.Fields.NAME.ordinal()).toLowerCase().contains(text) ||
+                                entry.getStringValue(Song.Fields.ARTIST.ordinal()).toLowerCase().contains(text) ||
+                                entry.getStringValue(Song.Fields.ALBUM.ordinal()).toLowerCase().contains(text);
+                    }
+                };
+            }
+
+            TableRowSorter<SongTableModel> sorter = (TableRowSorter<SongTableModel>) slimTunes.getSongTable().getRowSorter();
+            sorter.setRowFilter(filter);
+        }
     }
 
     private void setMenus() {
@@ -96,6 +139,8 @@ public class Controller {
         SongTableModel songTableModel = new SongTableModel(songs);
         slimTunes.getSongTable().setModel(songTableModel);
         slimTunes.validate();
+
+        slimTunes.getSearchBar().setText("");
     }
 
     private void setSongSelection() {
@@ -129,6 +174,7 @@ public class Controller {
             else
                 songTable.setModel(new SongTableModel(library.getSongs()));
             SongTableModel.setWidths(songTable);
+            slimTunes.getSearchBar().setText("");
         });
     }
 

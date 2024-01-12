@@ -1,26 +1,18 @@
 package slimtunes.view;
 
-import org.xml.sax.SAXException;
 import slimtunes.model.SongTableModel;
-import slimtunes.model.Library;
 import slimtunes.model.Playlist;
-import slimtunes.model.Song;
-import slimtunes.model.xml.Reader;
 
 import javax.swing.*;
-import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.List;
 
 public class SlimTunes extends JFrame {
-
-
     private final JList<Playlist> playlists;
     private final JLabel songLabel;
     private final JTable songTable;
+
+    private final JTextField searchBar;
 
     private final JMenuItem newItem;
     private final JMenuItem openItem;
@@ -59,6 +51,8 @@ public class SlimTunes extends JFrame {
     public JTable getSongTable() {
         return songTable;
     }
+
+    public JTextField getSearchBar() { return searchBar; }
 
     public SlimTunes() {
         super("SlimTunes");
@@ -100,13 +94,21 @@ public class SlimTunes extends JFrame {
         songPanel.add(songLabel, BorderLayout.CENTER);
         add(songPanel, BorderLayout.EAST);
 
-        //Playlists
+        // Playlists
         playlists = new JList<>(new DefaultListModel<>());
         JScrollPane playlistScrollPane = new JScrollPane(playlists);
         JPanel playlistPanel = new JPanel(new BorderLayout());
         playlistPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Playlists"));
         playlistPanel.add(playlistScrollPane, BorderLayout.CENTER);
         add(playlistPanel, BorderLayout.WEST);
+
+        // Search bar
+        searchBar = new JTextField();
+        JPanel searchBarPanel = new JPanel(new BorderLayout());
+        searchBarPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        searchBarPanel.add(searchBar, BorderLayout.CENTER);
+        searchBarPanel.add(new JLabel("Search: "), BorderLayout.WEST);
+        add(searchBarPanel, BorderLayout.NORTH);
 
         // Menus
         JMenuBar menuBar = new JMenuBar();
