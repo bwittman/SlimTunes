@@ -8,6 +8,8 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class SlimTunes extends JFrame {
+
+    public static final String TITLE = "SlimTunes";
     private final JList<Playlist> playlists;
     private final JLabel songLabel;
     private final JTable songTable;
@@ -55,7 +57,7 @@ public class SlimTunes extends JFrame {
     public JTextField getSearchBar() { return searchBar; }
 
     public SlimTunes() {
-        super("SlimTunes");
+        super(TITLE);
 
         SongTableModel songTableModel = new SongTableModel(new ArrayList<>());
         songTable = new JTable(songTableModel);
@@ -116,7 +118,9 @@ public class SlimTunes extends JFrame {
         newItem = new JMenuItem("New");
         openItem = new JMenuItem("Open...");
         saveItem = new JMenuItem("Save");
+        saveItem.setEnabled(false);
         saveAsItem = new JMenuItem("Save As...");
+        saveAsItem.setEnabled(false);
         exitItem = new JMenuItem("Exit");
         fileMenu.add(newItem);
         fileMenu.add(openItem);

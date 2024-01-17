@@ -2,20 +2,17 @@ package slimtunes.model.xml;
 
 import slimtunes.model.Library;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 
 public class Writer {
 
-    private PrintWriter writer;
+    private final PrintWriter writer;
     private String indent = "";
 
-    public Writer(Path path) throws IOException {
-        writer = new PrintWriter(new BufferedWriter(new FileWriter(path.toFile())));
+    public Writer(File file) throws IOException {
+        writer = new PrintWriter(new BufferedWriter(new FileWriter(file)));
     }
 
     public Writer writePreamble() {

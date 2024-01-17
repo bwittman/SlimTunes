@@ -72,9 +72,23 @@ public class Library extends WriteXML {
 
     public static String pathToString(Path path)  {
         try {
+            String fileName = path.getFileName().toString();
+            int dotLocation = fileName.lastIndexOf('.');
+            // Hack: Regular (non-directory) files will have an extension preceded by a dot
+            // We assume it's a regular file if its name is at least 3 characters long,
+            // its last dot is not the beginning, and its last dot is not at the end
+            boolean isFile = fileName.length() >= 3 && dotLocation > 0 && dotLocation < fileName.length() - 1;
             URI uri = path.toUri();
             uri = new URI(uri.getScheme(), "localhost", uri.getPath(), null, null);
-            return Writer.escapeXML(uri.toASCIIString());
+            if (isFile)
+                return Writer.escapeXML(uri.toASCIIString());
+            else { // Add / to directory names if not already present
+                String directoryName = Writer.escapeXML(uri.toASCIIString());
+                if (directoryName.endsWith("/"))
+                    return  directoryName;
+                else
+                    return directoryName + "/";
+            }
         }
         catch (URISyntaxException e) {
             return null;

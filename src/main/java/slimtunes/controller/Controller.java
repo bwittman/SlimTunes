@@ -6,6 +6,7 @@ import slimtunes.model.Playlist;
 import slimtunes.model.Song;
 import slimtunes.model.SongTableModel;
 import slimtunes.model.xml.Reader;
+import slimtunes.model.xml.Writer;
 import slimtunes.view.SlimTunes;
 
 import javax.swing.*;
@@ -24,13 +25,15 @@ public class Controller {
     private Library library;
 
     private boolean changed = false;
+    private File currentFile = null;
 
-    final JFileChooser chooser = new JFileChooser();
+    final JFileChooser xmlChooser = new JFileChooser();
+    final JFileChooser mediaChooser = new JFileChooser();
     public Controller(SlimTunes slimTunes) {
         this.slimTunes = slimTunes;
         this.library = new Library();
 
-        chooser.setFileFilter(new FileFilter() {
+        xmlChooser.setFileFilter(new FileFilter() {
             @Override
             public boolean accept(File file) {
                 if (file == null)
@@ -44,8 +47,7 @@ public class Controller {
             }
         });
 
-        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-
+        xmlChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
         setPlaylistSelection();
         setSongSelection();
@@ -88,8 +90,11 @@ public class Controller {
                 };
             }
 
-            TableRowSorter<SongTableModel> sorter = (TableRowSorter<SongTableModel>) slimTunes.getSongTable().getRowSorter();
-            sorter.setRowFilter(filter);
+            try {
+                TableRowSorter<SongTableModel> sorter = (TableRowSorter<SongTableModel>) slimTunes.getSongTable().getRowSorter();
+                sorter.setRowFilter(filter);
+            }
+            catch (ClassCastException ignored) {}
         }
     }
 
@@ -101,28 +106,72 @@ public class Controller {
         openItem.addActionListener(e -> openFile());
 
         JMenuItem saveItem = slimTunes.getSaveItem();
+        saveItem.addActionListener(e -> saveFile());
         JMenuItem saveAsItem = slimTunes.getSaveAsItem();
+        saveAsItem.addActionListener(e -> saveFileAs());
 
         JMenuItem exitItem = slimTunes.getExitItem();
         exitItem.addActionListener(e -> slimTunes.dispose());
     }
 
-    private void openFile() {
-        int result = chooser.showOpenDialog(slimTunes);
+    private void saveFileAs() {
+        int result = xmlChooser.showSaveDialog(slimTunes);
         if (result == JFileChooser.APPROVE_OPTION) {
-            File file = chooser.getSelectedFile();
+            File file = xmlChooser.getSelectedFile();
+            if (!file.getName().toLowerCase().endsWith(".xml"))
+                file = new File(file.getParentFile(), file.getName() + ".xml");
+
+            if (!file.exists() || JOptionPane.showConfirmDialog(slimTunes, "<html>The file " + file +
+                    " already exists.<br/>Do you want to overwrite it?</html>", "Overwrite File?",
+                    JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                save(file);
+            }
+        }
+    }
+
+    private void setChanged(boolean value) {
+        String fileName = currentFile == null ? "" : " - " + currentFile;
+        if (value) {
+            slimTunes.setTitle(SlimTunes.TITLE + fileName + "*");
+            slimTunes.getSaveItem().setEnabled(true);
+        }
+        else
+            slimTunes.setTitle(SlimTunes.TITLE + fileName);
+        changed = value;
+    }
+
+    private void saveFile() {
+        if (changed && currentFile != null)
+            save(currentFile);
+    }
+
+    private void save(File file) {
+        try {
+            Writer writer = new Writer(file);
+            library.write(writer);
+            writer.close();
+            currentFile = file;
+            setChanged(false);
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(slimTunes, "Error saving file!", "Save Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void openFile() {
+        int result = xmlChooser.showOpenDialog(slimTunes);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File file = xmlChooser.getSelectedFile();
             try {
                 Library library = new Library();
                 Reader reader = new Reader();
                 reader.read(file.toPath(), library);
 
                 setLibrary(library);
-
-                //Writer writer = new Writer(Path.of("Library2.xml"));
-                //library.write(writer);
-                //writer.close();
+                currentFile = file;
+                slimTunes.getSaveAsItem().setEnabled(true);
+                setChanged(false);
             } catch (ParserConfigurationException | IOException | SAXException ignore) {
-                //throw new RuntimeException(e);
+                JOptionPane.showMessageDialog(slimTunes, "Error opening file: " + file, "Open Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
