@@ -7,22 +7,22 @@ import javax.swing.table.TableColumn;
 import java.time.LocalTime;
 import java.util.List;
 
-import static slimtunes.model.Song.Fields;
+import static slimtunes.model.File.Fields;
 
-public class SongTableModel extends AbstractTableModel {
-    List<Song> songs;
+public class FileTableModel extends AbstractTableModel {
+    List<File> files;
 
-    private static final Song.Fields[] COLUMNS = new Fields[] {
-            Song.Fields.TRACK_ID, Song.Fields.NAME, Song.Fields.ARTIST, Song.Fields.ALBUM, Song.Fields.TRACK_NUMBER, Song.Fields.TOTAL_TIME, Song.Fields.BIT_RATE, Song.Fields.YEAR, Song.Fields.GENRE,
+    private static final File.Fields[] COLUMNS = new Fields[] {
+            File.Fields.TRACK_ID, File.Fields.NAME, File.Fields.ARTIST, File.Fields.ALBUM, File.Fields.TRACK_NUMBER, File.Fields.TOTAL_TIME, File.Fields.BIT_RATE, File.Fields.YEAR, File.Fields.GENRE,
     };
 
-    public SongTableModel(List<Song> songs) {
-        this.songs = songs;
+    public FileTableModel(List<File> files) {
+        this.files = files;
     }
 
     @Override
     public int getRowCount() {
-        return songs.size();
+        return files.size();
     }
 
     @Override
@@ -58,7 +58,7 @@ public class SongTableModel extends AbstractTableModel {
               case TOTAL_TIME -> {
                   column.setPreferredWidth(35);
                   column.setMinWidth(35);
-                  column.setMaxWidth(45); // In case of songs longer than an hour
+                  column.setMaxWidth(45); // In case of files longer than an hour
                   column.setCellRenderer(center);
                   column.setHeaderRenderer(center);
               }
@@ -99,20 +99,20 @@ public class SongTableModel extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        if (rowIndex < 0 || rowIndex >= songs.size() || columnIndex < 0 || columnIndex >= getColumnCount())
+        if (rowIndex < 0 || rowIndex >= files.size() || columnIndex < 0 || columnIndex >= getColumnCount())
             return null;
 
-        Song song = songs.get(rowIndex);
+        File file = files.get(rowIndex);
         return switch(COLUMNS[columnIndex]){
             case TRACK_ID -> rowIndex + 1;
-            case NAME -> song.getName();
-            case ARTIST -> song.getArtist();
-            case TOTAL_TIME -> song.getTotalTime() == null ? null : new Time(song.getTotalTime());
-            case BIT_RATE -> song.getBitRate();
-            case ALBUM -> song.getAlbum();
-            case GENRE -> song.getGenre();
-            case TRACK_NUMBER -> song.getTrackNumber();
-            case YEAR -> song.getYear();
+            case NAME -> file.getName();
+            case ARTIST -> file.getArtist();
+            case TOTAL_TIME -> file.getTotalTime() == null ? null : new Time(file.getTotalTime());
+            case BIT_RATE -> file.getBitRate();
+            case ALBUM -> file.getAlbum();
+            case GENRE -> file.getGenre();
+            case TRACK_NUMBER -> file.getTrackNumber();
+            case YEAR -> file.getYear();
             default -> "";
         };
     }

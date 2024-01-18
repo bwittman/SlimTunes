@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-public class Library extends WriteXML {
+public class Library extends WriteXML implements FileList {
 
     public enum Fields {
         MAJOR_VERSION, MINOR_VERSION, DATE, APPLICATION_VERSION, FEATURES, SHOW_CONTENT_RATINGS, MUSIC_FOLDER, LIBRARY_PERSISTENT_ID;
@@ -38,7 +38,7 @@ public class Library extends WriteXML {
     private String libraryPersistentId;
 
     // Use of LinkedHashMap allows us to preserve order
-    private final Map<Integer, Song> songs = new LinkedHashMap<>();
+    private final Map<Integer, File> files = new LinkedHashMap<>();
     private final Set<String> artists = new TreeSet<>();
     private final List<Playlist> playlists = new ArrayList<>();
 
@@ -110,14 +110,14 @@ public class Library extends WriteXML {
         return comment.replaceAll("\r\n", "\n");
     }
 
-    public List<Song> getSongs() {
-        return new ArrayList<>(songs.values());
+    public List<File> getFiles() {
+        return new ArrayList<>(files.values());
     }
 
-    public void putSong(int trackId, Song song) {
-        songs.put(trackId, song);
-        if (song.getArtist() != null)
-            artists.add(song.getArtist());
+    public void putFile(int trackId, File file) {
+        files.put(trackId, file);
+        if (file.getArtist() != null)
+            artists.add(file.getArtist());
     }
 
     public void write(Writer writer) {
@@ -136,7 +136,7 @@ public class Library extends WriteXML {
 
         writer.keyDict("Tracks"); // open dict
 
-            for (Map.Entry<Integer, Song> entry : songs.entrySet()) {
+            for (Map.Entry<Integer, File> entry : files.entrySet()) {
                 writer.keyDict(entry.getKey().toString()); // open dict
                 entry.getValue().write(writer);
                 writer.dict(false);
@@ -159,10 +159,15 @@ public class Library extends WriteXML {
         writer.close();
     }
 
+    @Override
+    public String toString() {
+        return "<html><b>All Files</b></html>";
+    }
 
 
-    public Song getSong(int trackId) {
-        return songs.get(trackId);
+
+    public File getFile(int trackId) {
+        return files.get(trackId);
     }
     public void addPlaylist(Playlist playlist) { playlists.add(playlist); }
 

@@ -15,24 +15,27 @@ import org.xml.sax.SAXException;
 import slimtunes.model.DictionaryProcessor;
 import slimtunes.model.Library;
 import slimtunes.model.Playlist;
-import slimtunes.model.Song;
+import slimtunes.model.File;
 
 public class Reader implements DictionaryProcessor {
 
     private Library currentLibrary;
     private Playlist currentPlaylist;
 
-    private Song currentSong;
+    private File currentFile;
 
 
     public void read(Path path, Library library) throws ParserConfigurationException, IOException, SAXException {
 
         currentLibrary = library;
         currentPlaylist = null;
-        currentSong = null;
+        currentFile = null;
 
         //Parser that produces DOM object trees from XML content
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        // These settings prevent exceptions when no Internet is available (to read the Apple DTD)
+        factory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
+        factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
 
         //API to obtain DOM Document instance
         DocumentBuilder builder = factory.newDocumentBuilder();
@@ -61,7 +64,7 @@ public class Reader implements DictionaryProcessor {
             System.out.println();
         }
         else if(key.getTextContent().equals("Tracks")) {
-            processDictionary(value, this::processSong);
+            processDictionary(value, this::processFile);
             System.out.println();
         }
         else
@@ -77,10 +80,10 @@ public class Reader implements DictionaryProcessor {
     }
 
 
-    public void processSong(Element key, Element dictionary) {
-        currentSong = new Song();
-        processDictionary(dictionary, (k, v) -> currentSong.addField(k.getTextContent(), getContent(v)));
-        currentLibrary.putSong(currentSong.getTrackId(), currentSong);
+    public void processFile(Element key, Element dictionary) {
+        currentFile = new File();
+        processDictionary(dictionary, (k, v) -> currentFile.addField(k.getTextContent(), getContent(v)));
+        currentLibrary.putFile(currentFile.getTrackId(), currentFile);
     }
 
     public void processPlaylist(Element key, Element value) {
@@ -95,7 +98,7 @@ public class Reader implements DictionaryProcessor {
                 if (child.getNodeName().equals("dict")) {
                     processDictionary((Element)child, (k,v) -> {
                         int trackId = Integer.parseInt(v.getTextContent());
-                        currentPlaylist.addSong(currentLibrary.getSong(trackId));
+                        currentPlaylist.addFile(currentLibrary.getFile(trackId));
                     });
                 }
             }

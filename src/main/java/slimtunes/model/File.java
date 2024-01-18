@@ -6,7 +6,7 @@ import slimtunes.model.xml.Writer;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 
-public class Song extends WriteXML {
+public class File extends WriteXML {
 
 
 

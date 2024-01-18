@@ -5,7 +5,7 @@ import slimtunes.model.xml.Writer;
 
 import java.util.*;
 
-public class Playlist extends WriteXML {
+public class Playlist extends WriteXML implements FileList {
 
 
     public enum Fields {
@@ -44,10 +44,6 @@ public class Playlist extends WriteXML {
             }
     }
 
-    public String getName() {
-        return name;
-    }
-
     private String name;
     private String description;
     private Boolean master;
@@ -64,14 +60,14 @@ public class Playlist extends WriteXML {
     private Boolean visible;
     private Boolean allItems;
 
-    private final List<Song> songs = new ArrayList<>();
+    private final List<File> files = new ArrayList<>();
 
-    public List<Song> getSongs() {
-        return songs;
+    public List<File> getFiles() {
+        return files;
     }
 
-    public void addSong(Song song) {
-        songs.add(song);
+    public void addFile(File file) {
+        files.add(file);
     }
 
     @Override
@@ -94,12 +90,12 @@ public class Playlist extends WriteXML {
         if (smartCriteria != null)
             writer.keyData(Fields.SMART_CRITERIA.toString(), smartCriteria);
 
-        if (songs.size() > 0) {
+        if (files.size() > 0) {
             writer.keyArray("Playlist Items"); // open array
 
-            for (Song song : songs) {
+            for (File file : files) {
                 writer.dict(true);
-                writer.keyInteger("Track ID", Long.valueOf(song.getTrackId()));
+                writer.keyInteger("Track ID", Long.valueOf(file.getTrackId()));
                 writer.dict(false);
             }
             writer.array(false);
