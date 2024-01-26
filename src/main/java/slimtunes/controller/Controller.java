@@ -4,6 +4,7 @@ import org.xml.sax.SAXException;
 import slimtunes.model.*;
 import slimtunes.model.xml.Reader;
 import slimtunes.model.xml.Writer;
+import slimtunes.view.LibrarySelection;
 import slimtunes.view.SlimTunes;
 
 import javax.swing.*;
@@ -26,9 +27,9 @@ public class Controller {
 
     final JFileChooser xmlChooser = new JFileChooser();
     final JFileChooser mediaChooser = new JFileChooser();
-    public Controller(SlimTunes slimTunes) {
-        this.slimTunes = slimTunes;
-        this.library = new Library();
+    public Controller() {
+        slimTunes = new SlimTunes();
+        library = new Library();
 
         xmlChooser.setFileFilter(new FileFilter() {
             @Override
@@ -46,13 +47,25 @@ public class Controller {
 
         xmlChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
-        setPlaylistSelection();
-        setFileSelection();
-        setMenus();
-        setSearchBar();
+        addPlaylistListeners();
+        addFileTableListeners();
+        addMenuListeners();
+        addButtonListeners();
+        addSearchBarListeners();
     }
 
-    private void setSearchBar() {
+    private void addButtonListeners() {
+        JButton removeFileFromLibraryButton = slimTunes.getRemoveFileFromLibraryButton();
+        removeFileFromLibraryButton.addActionListener(e -> removeFileFromLibrary());
+
+        JButton addFileToPlaylistsButton = slimTunes.getAddFileToPlaylistsButton();
+        addFileToPlaylistsButton.addActionListener(e -> addFileToPlaylists());
+
+        JButton removeFileFromPlaylistButton = slimTunes.getRemoveFileFromPlaylistButton();
+        removeFileFromPlaylistButton.addActionListener(e -> removeFileFromPlaylist());
+    }
+
+    private void addSearchBarListeners() {
         JTextField searchBar = slimTunes.getSearchBar();
         searchBar.getDocument().addDocumentListener(new DocumentListener() {
             @Override
@@ -95,7 +108,7 @@ public class Controller {
         }
     }
 
-    private void setMenus() {
+    private void addMenuListeners() {
         // File menu
         JMenuItem newItem = slimTunes.getNewItem();
         newItem.addActionListener(e -> setLibrary(new Library()));
@@ -118,8 +131,8 @@ public class Controller {
         JMenuItem removeFileFromLibraryItem = slimTunes.getRemoveFileFromLibraryItem();
         removeFileFromLibraryItem.addActionListener(e -> removeFileFromLibrary());
 
-        JMenuItem addFileToPlaylistItem = slimTunes.getRemoveFileFromPlaylistItem();
-        addFileToPlaylistItem.addActionListener(e -> addFileToPlaylist());
+        JMenuItem addFileToPlaylistItem = slimTunes.getAddFileToLibraryItem();
+        addFileToPlaylistItem.addActionListener(e -> addFileToPlaylists());
 
         JMenuItem removeFileFromPlaylistItem = slimTunes.getRemoveFileFromPlaylistItem();
         removeFileFromPlaylistItem.addActionListener(e -> removeFileFromPlaylist());
@@ -128,7 +141,18 @@ public class Controller {
     private void removeFileFromPlaylist() {
     }
 
-    private void addFileToPlaylist() {
+    private void addFileToPlaylists() {
+        JList<FileList> playlists = slimTunes.getPlaylists();
+        JTable fileTable = slimTunes.getFileTable();
+        ListSelectionModel model = fileTable.getSelectionModel();
+        int[] selections = model.getSelectedIndices();
+        File[] files = new File[selections.length];
+
+        for (int i = 0; i < files.length; ++i)
+            files[i] = playlists.getSelectedValue().getFiles().get(selections[i]);
+
+        LibrarySelection librarySelection = new LibrarySelection(slimTunes, files, library.getPlaylists());
+        librarySelection.setVisible(true);
     }
 
     private void removeFileFromLibrary() {
@@ -216,7 +240,7 @@ public class Controller {
         slimTunes.getSearchBar().setText("");
     }
 
-    private void setFileSelection() {
+    private void addFileTableListeners() {
         JTable fileTable = slimTunes.getFileTable();
 
         fileTable.getSelectionModel().addListSelectionListener(event -> updateStatus());
@@ -248,7 +272,7 @@ public class Controller {
         }
         else if (fileTable.getSelectedRowCount() == 1) {
             int row = fileTable.convertRowIndexToModel(fileTable.getSelectedRow());
-            fileLabel.setText("<html>" + playlists.getSelectedValue().getFiles().get(row).toString().replaceAll("\n", "<br/>") + "</html>");
+            fileLabel.setText("<html>" + playlists.getSelectedValue().getFiles().get(row).getInformation().replaceAll("\n", "<br/>") + "</html>");
         }
         else
             fileLabel.setText("");
@@ -281,7 +305,7 @@ public class Controller {
         slimTunes.getRemoveFileFromLibraryPopupItem().setEnabled(value);
     }
 
-    private void setPlaylistSelection() {
+    private void addPlaylistListeners() {
         JList<FileList> playlists = slimTunes.getPlaylists();
         JTable fileTable = slimTunes.getFileTable();
         playlists.getSelectionModel().addListSelectionListener(event -> {
@@ -299,8 +323,6 @@ public class Controller {
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
                  UnsupportedLookAndFeelException ignore) {
         }
-
-        SlimTunes slimTunes = new SlimTunes();
-        new Controller(slimTunes);
+        new Controller();
     }
 }

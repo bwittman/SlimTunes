@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class SlimTunes extends JFrame {
 
     public static final String TITLE = "SlimTunes";
-    private static final int SPACING = 10;
+    public static final int SPACING = 10;
     private final JList<FileList> playlists;
     private final JLabel fileLabel;
     private final JTable fileTable;

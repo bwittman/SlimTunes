@@ -264,8 +264,11 @@ public class File extends WriteXML {
         write(writer, Fields.FILE_FOLDER_COUNT, fileFolderCount);
         write(writer, Fields.LIBRARY_FOLDER_COUNT, libraryFolderCount);
     }
-
     public String toString() {
+        return artist + " - " + name;
+    }
+
+    public String getInformation() {
         StringBuilder builder = new StringBuilder();
         append(builder, "Track ID", trackId);
         append(builder, "Name", name);
