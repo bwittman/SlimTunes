@@ -30,7 +30,7 @@ public class LibrarySelection extends JDialog {
         super(parent, "Select Libraries", true);
         this.playlists = playlists;
 
-        JPanel filePanel = new JPanel();
+        JPanel filePanel = new JPanel(new BorderLayout());
         if (files.length > 1) {
             selectionManager = new MultipleFileSelectionManager();
             filePanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Selected Files"));
@@ -42,19 +42,32 @@ public class LibrarySelection extends JDialog {
 
         JTextArea textArea = new JTextArea();
         JScrollPane scrollPane = new JScrollPane(textArea);
-        for (File file : files)
-            textArea.append(file + System.lineSeparator());
+        boolean first = true;
+        for (File file : files) {
+            if (first)
+                first = false;
+            else
+                textArea.append(System.lineSeparator());
+            textArea.append(file.toString());
+        }
         textArea.setEditable(false);
         filePanel.add(scrollPane, BorderLayout.CENTER);
 
         JPanel playlistPanel = new JPanel(new GridLayout(playlists.size(), 1));
         playlistPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Choose Playlists"));
 
+        int widestCheckbox = 0;
+
         for (Playlist playlist : playlists) {
             JCheckBox checkBox = selectionManager.createCheckBox(files, playlist);
+            int width = checkBox.getWidth();
+            if (width > widestCheckbox)
+                widestCheckbox = width;
             checkBoxes.add(checkBox);
             playlistPanel.add(checkBox);
         }
+
+        scrollPane = new JScrollPane(playlistPanel);
 
         // Buttons
         JPanel buttonPanel = new JPanel(new GridLayout(2, 1, SlimTunes.SPACING, SlimTunes.SPACING));
@@ -62,10 +75,16 @@ public class LibrarySelection extends JDialog {
         buttonPanel.add(cancelButton);
 
         add(filePanel, BorderLayout.NORTH);
-        add(playlistPanel, BorderLayout.CENTER);
+        add(scrollPane, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
 
-        pack();
+        GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        int width = device.getDisplayMode().getWidth();
+        int height = device.getDisplayMode().getHeight();
+        setSize(new Dimension(width, height/2));
+        setMinimumSize(new Dimension(widestCheckbox * 2, height/3));
+
+        setLocationRelativeTo(parent);
     }
 
     public void updatePlaylists(List<Playlist> addLists, List<Playlist> removeLists) {
