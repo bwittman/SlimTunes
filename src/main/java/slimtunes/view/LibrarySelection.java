@@ -31,30 +31,37 @@ public class LibrarySelection extends JDialog {
         this.playlists = playlists;
 
         JPanel filePanel = new JPanel(new BorderLayout());
+        String title;
         if (files.length > 1) {
             selectionManager = new MultipleFileSelectionManager();
-            filePanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Selected Files"));
+            title = "Selected Files";
         }
         else {
             selectionManager = new SingleFileSelectionManager();
-            filePanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Selected File"));
+            title = "Selected File";
         }
 
-        JTextArea textArea = new JTextArea();
-        JScrollPane scrollPane = new JScrollPane(textArea);
+        filePanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), title));
+
         boolean first = true;
+        StringBuilder builder = new StringBuilder("<html>");
         for (File file : files) {
             if (first)
                 first = false;
             else
-                textArea.append(System.lineSeparator());
-            textArea.append(file.toString());
+                builder.append("<br/>");
+            builder.append(file.toString());
         }
-        textArea.setEditable(false);
+
+        JLabel fileLabel = new JLabel(builder.append("</html>").toString());
+        fileLabel.setVerticalAlignment(SwingConstants.TOP);
+        JScrollPane scrollPane = new JScrollPane(fileLabel);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder(SlimTunes.SPACING, SlimTunes.SPACING,
+                SlimTunes.SPACING, SlimTunes.SPACING));
         filePanel.add(scrollPane, BorderLayout.CENTER);
 
-        JPanel playlistPanel = new JPanel(new GridLayout(playlists.size(), 1));
-        playlistPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Choose Playlists"));
+        JPanel playlistPanel = new JPanel();
+        playlistPanel.setLayout(new BoxLayout(playlistPanel, BoxLayout.Y_AXIS));
 
         int widestCheckbox = 0;
 
@@ -68,21 +75,29 @@ public class LibrarySelection extends JDialog {
         }
 
         scrollPane = new JScrollPane(playlistPanel);
+        scrollPane.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Choose Playlists"));
 
         // Buttons
-        JPanel buttonPanel = new JPanel(new GridLayout(2, 1, SlimTunes.SPACING, SlimTunes.SPACING));
+        JPanel buttonPanel = new JPanel(new GridLayout(1, 2, SlimTunes.SPACING, SlimTunes.SPACING));
         buttonPanel.add(doneButton);
         buttonPanel.add(cancelButton);
+        JPanel spacingPanel = new JPanel(new FlowLayout());
+        spacingPanel.add(buttonPanel);
 
         add(filePanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
-        add(buttonPanel, BorderLayout.SOUTH);
+        add(spacingPanel, BorderLayout.SOUTH);
 
         GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-        int width = device.getDisplayMode().getWidth();
         int height = device.getDisplayMode().getHeight();
-        setSize(new Dimension(width, height/2));
-        setMinimumSize(new Dimension(widestCheckbox * 2, height/3));
+        int width = device.getDisplayMode().getHeight();
+        //setSize(new Dimension(Math.min(fileLabel.getWidth() * 2, widestCheckbox * 2), height/2));
+        //setMinimumSize(new Dimension(widestCheckbox * 2, height/3));
+        //setPreferredSize(new Dimension(widestCheckbox * 2, height/2));
+        //scrollPane.setMaximumSize(new Dimension(width, height /2 ));
+        scrollPane.setPreferredSize(new Dimension(widestCheckbox * 2, height /2 ));
+
+        pack();
 
         setLocationRelativeTo(parent);
     }

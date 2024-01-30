@@ -13,8 +13,11 @@ import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.table.TableRowSorter;
 import javax.xml.parsers.ParserConfigurationException;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.font.FontRenderContext;
+import java.awt.font.LineMetrics;
 import java.io.IOException;
 
 public class Controller {
@@ -267,15 +270,24 @@ public class Controller {
         JTable fileTable = slimTunes.getFileTable();
         int selectedRows = fileTable.getSelectedRowCount();
 
+        int lines = 1;
         if (selectedRows > 1) {
             fileLabel.setText(fileTable.getSelectedRowCount() + " files selected");
         }
         else if (fileTable.getSelectedRowCount() == 1) {
             int row = fileTable.convertRowIndexToModel(fileTable.getSelectedRow());
-            fileLabel.setText("<html>" + playlists.getSelectedValue().getFiles().get(row).getInformation().replaceAll("\n", "<br/>") + "</html>");
+            String information = playlists.getSelectedValue().getFiles().get(row).getInformation();
+            lines = (int) information.codePoints().filter(ch -> ch == '\n').count();
+            fileLabel.setText("<html>" + information.replaceAll("\n", "<br/>") + "</html>");
         }
         else
             fileLabel.setText("");
+
+
+        FontMetrics metrics = fileLabel.getGraphics().getFontMetrics();
+        Dimension dimension = fileLabel.getSize();
+        dimension.height = metrics.getHeight() * (lines + 1);
+        fileLabel.setPreferredSize(dimension);
 
         boolean value = selectedRows > 0;
         String s = selectedRows > 1 ? "s" : "";

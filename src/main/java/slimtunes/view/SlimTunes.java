@@ -153,9 +153,12 @@ public class SlimTunes extends JFrame {
         fileLabel.setPreferredSize(new Dimension(256, 256));
         fileLabel.setMinimumSize(new Dimension(256, 256));
         fileLabel.setVerticalAlignment(SwingConstants.TOP);
+        JScrollPane scrollPane = new JScrollPane(fileLabel);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder(SPACING, SPACING, SPACING, SPACING));
+
         JPanel filePanel = new JPanel(new BorderLayout());
         filePanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Selected File"));
-        filePanel.add(fileLabel, BorderLayout.CENTER);
+        filePanel.add(scrollPane, BorderLayout.CENTER);
 
         addFileToPlaylistsButton = new JButton("Add File to Playlists");
         addFileToPlaylistsButton.setEnabled(false);
@@ -228,7 +231,6 @@ public class SlimTunes extends JFrame {
         menuBar.add(mediaMenu);
         setJMenuBar(menuBar);
 
-
         // Popup stuff
         popupMenu = new JPopupMenu();
         removeFileFromLibraryPopupItem = new JMenuItem("Remove File from Playlist");
@@ -243,10 +245,13 @@ public class SlimTunes extends JFrame {
         popupMenu.add(removeFileFromPlaylistPopupItem);
 
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        /*
         GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
         int width = device.getDisplayMode().getWidth();
         int height = device.getDisplayMode().getHeight();
         setSize(width/2, height/2);
+        */
+        pack();
         setLocationRelativeTo(null);
         setVisible(true);
     }
