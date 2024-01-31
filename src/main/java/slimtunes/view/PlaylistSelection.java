@@ -9,7 +9,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LibrarySelection extends JDialog {
+public class PlaylistSelection extends JDialog {
     private final JButton doneButton = new JButton("Done");
     private final JButton cancelButton = new JButton("Cancel");
 
@@ -26,8 +26,8 @@ public class LibrarySelection extends JDialog {
         return cancelButton;
     }
 
-    public LibrarySelection(SlimTunes parent, File[] files, List<Playlist> playlists) {
-        super(parent, "Select Libraries", true);
+    public PlaylistSelection(SlimTunes parent, File[] files, List<Playlist> playlists) {
+        super(parent, "Select Playlists", true);
         this.playlists = playlists;
 
         JPanel filePanel = new JPanel(new BorderLayout());
@@ -114,7 +114,7 @@ public class LibrarySelection extends JDialog {
         @Override
         public JCheckBox createCheckBox(File[] files, Playlist playlist) {
             JCheckBox checkBox = new JCheckBox(playlist.toString());
-            checkBox.setSelected(playlist.getFiles().contains(files[0]));
+            checkBox.setSelected(playlist.contains(files[0]));
             return checkBox;
         }
 
@@ -132,7 +132,7 @@ public class LibrarySelection extends JDialog {
             TristateCheckBox checkBox = new TristateCheckBox(playlist.toString());
             int count = 0;
             for (File file : files) {
-                if (playlist.getFiles().contains(file))
+                if (playlist.contains(file))
                     ++count;
             }
 

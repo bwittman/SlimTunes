@@ -4,7 +4,7 @@ import org.xml.sax.SAXException;
 import slimtunes.model.*;
 import slimtunes.model.xml.Reader;
 import slimtunes.model.xml.Writer;
-import slimtunes.view.LibrarySelection;
+import slimtunes.view.PlaylistSelection;
 import slimtunes.view.SlimTunes;
 
 import javax.swing.*;
@@ -16,9 +16,11 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.font.FontRenderContext;
-import java.awt.font.LineMetrics;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Controller {
 
@@ -55,6 +57,30 @@ public class Controller {
         addMenuListeners();
         addButtonListeners();
         addSearchBarListeners();
+
+        slimTunes.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                quit();
+            }
+        });
+    }
+
+    private void quit() {
+        if(changed) {
+            int answer = JOptionPane.showConfirmDialog(slimTunes, "Library has unsaved changes. Do you want to save before exiting?", "Save Library?", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+            if (answer == JOptionPane.CANCEL_OPTION)
+                return;
+            if (answer == JOptionPane.YES_OPTION) {
+                if (currentFile != null) {
+                    saveLibrary();
+                }
+                else if (!saveLibraryAs()) // If failed to save
+                    return;
+            }
+        }
+
+        slimTunes.dispose();
     }
 
     private void addButtonListeners() {
@@ -152,10 +178,39 @@ public class Controller {
         File[] files = new File[selections.length];
 
         for (int i = 0; i < files.length; ++i)
-            files[i] = playlists.getSelectedValue().getFiles().get(selections[i]);
+            files[i] = playlists.getSelectedValue().getFiles().get(fileTable.convertRowIndexToModel(selections[i]));
 
-        LibrarySelection librarySelection = new LibrarySelection(slimTunes, files, library.getPlaylists());
-        librarySelection.setVisible(true);
+        PlaylistSelection playlistSelection = new PlaylistSelection(slimTunes, files, library.getPlaylists());
+        playlistSelection.getCancelButton().addActionListener(e -> playlistSelection.dispose());
+        playlistSelection.getDoneButton().addActionListener(e -> updatePlaylists(playlistSelection, files));
+        playlistSelection.setVisible(true);
+    }
+
+    private void updatePlaylists(PlaylistSelection playlistSelection, File[] files) {
+        List<Playlist> addLists = new ArrayList<>();
+        List<Playlist> removeLists = new ArrayList<>();
+        playlistSelection.updatePlaylists(addLists, removeLists);
+
+        boolean changed = this.changed; // might already be changed
+        for (File file : files) {
+            for (Playlist playlist : addLists) {
+                if (!playlist.contains(file)) {
+                    playlist.addFile(file);
+                    changed = true;
+                }
+            }
+
+            for (Playlist playlist : removeLists) {
+                if (playlist.contains(file)) {
+                    playlist.remove(file);
+                    changed = true;
+                }
+            }
+        }
+
+        slimTunes.getFileTable().clearSelection();
+        setChanged(changed);
+        playlistSelection.dispose();
     }
 
     private void removeFileFromLibrary() {
@@ -164,7 +219,7 @@ public class Controller {
     private void addFileToLibrary() {
     }
 
-    private void saveLibraryAs() {
+    private boolean saveLibraryAs() {
         int result = xmlChooser.showSaveDialog(slimTunes);
         if (result == JFileChooser.APPROVE_OPTION) {
             java.io.File file = xmlChooser.getSelectedFile();
@@ -175,8 +230,10 @@ public class Controller {
                     " already exists.<br/>Do you want to overwrite it?</html>", "Overwrite File?",
                     JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                 save(file);
+                return true;
             }
         }
+        return false;
     }
 
     private void setChanged(boolean value) {
@@ -238,7 +295,7 @@ public class Controller {
         slimTunes.getPlaylists().setModel(listModel);
         slimTunes.getPlaylists().setSelectedIndex(0);
         slimTunes.getAddFileToLibraryItem().setEnabled(true);
-        slimTunes.validate();
+        slimTunes.revalidate();
 
         slimTunes.getSearchBar().setText("");
     }

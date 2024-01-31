@@ -244,7 +244,7 @@ public class SlimTunes extends JFrame {
         popupMenu.add(addFileToPlaylistsPopupItem);
         popupMenu.add(removeFileFromPlaylistPopupItem);
 
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         /*
         GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
         int width = device.getDisplayMode().getWidth();

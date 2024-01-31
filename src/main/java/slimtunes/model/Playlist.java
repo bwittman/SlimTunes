@@ -8,6 +8,7 @@ import java.util.*;
 public class Playlist extends WriteXML implements FileList {
 
 
+
     public enum Fields {
         NAME, DESCRIPTION, MASTER, PLAYLIST_ID, PLAYLIST_PERSISTENT_ID, DISTINGUISHED_KIND, MUSIC, MOVIES, TV_SHOWS, PODCASTS, AUDIOBOOKS, SMART_INFO, SMART_CRITERIA,  VISIBLE, ALL_ITEMS;
 
@@ -68,6 +69,14 @@ public class Playlist extends WriteXML implements FileList {
 
     public void addFile(File file) {
         files.add(file);
+    }
+
+    public boolean contains(File file) {
+        return files.contains(file);
+    }
+
+    public void remove(File file) {
+        files.remove(file);
     }
 
     @Override
