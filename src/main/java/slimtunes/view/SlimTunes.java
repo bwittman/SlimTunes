@@ -24,7 +24,7 @@ public class SlimTunes extends JFrame {
     private final JMenuItem exitItem;
     private final JMenuItem addFileToLibraryItem;
     private final JMenuItem removeFileFromLibraryItem;
-    private final JMenuItem addFileToPlaylistsItem;
+    private final JMenuItem selectPlaylistsForFilesItem;
     private final JMenuItem removeFileFromPlaylistItem;
 
     private final JPopupMenu popupMenu;
@@ -32,15 +32,15 @@ public class SlimTunes extends JFrame {
 
 
     private final JMenuItem removeFileFromLibraryPopupItem;
-    private final JMenuItem addFileToPlaylistsPopupItem;
+    private final JMenuItem selectPlaylistsForFilesPopupItem;
     private final JMenuItem removeFileFromPlaylistPopupItem;
 
-    private final JButton addFileToPlaylistsButton;
+    private final JButton selectPlaylistsForFilesButton;
     private final JButton removeFileFromPlaylistButton;
     private final JButton removeFileFromLibraryButton;
 
-    public JButton getAddFileToPlaylistsButton() {
-        return addFileToPlaylistsButton;
+    public JButton getSelectPlaylistsForFilesButton() {
+        return selectPlaylistsForFilesButton;
     }
 
     public JButton getRemoveFileFromPlaylistButton() {
@@ -59,8 +59,8 @@ public class SlimTunes extends JFrame {
         return removeFileFromLibraryPopupItem;
     }
 
-    public JMenuItem getAddFileToPlaylistsPopupItem() {
-        return addFileToPlaylistsPopupItem;
+    public JMenuItem getSelectPlaylistsForFilesPopupItem() {
+        return selectPlaylistsForFilesPopupItem;
     }
 
     public JMenuItem getRemoveFileFromPlaylistPopupItem() {
@@ -95,8 +95,8 @@ public class SlimTunes extends JFrame {
         return removeFileFromLibraryItem;
     }
 
-    public JMenuItem getAddFileToPlaylistsItem() {
-        return addFileToPlaylistsItem;
+    public JMenuItem getSelectPlaylistsForFilesItem() {
+        return selectPlaylistsForFilesItem;
     }
 
     public JMenuItem getRemoveFileFromPlaylistItem() {
@@ -115,12 +115,18 @@ public class SlimTunes extends JFrame {
         return fileTable;
     }
 
+    public FileTableModel getFileTableModel() {
+        return fileTableModel;
+    }
+
+    public FileTableModel fileTableModel;
+
     public JTextField getSearchBar() { return searchBar; }
 
     public SlimTunes() {
         super(TITLE);
 
-        FileTableModel fileTableModel = new FileTableModel(new ArrayList<>());
+        fileTableModel = new FileTableModel(new ArrayList<>());
         fileTable = new JTable(fileTableModel);
         FileTableModel.setWidths(fileTable);
         fileTable.setAutoCreateRowSorter(true);
@@ -160,15 +166,15 @@ public class SlimTunes extends JFrame {
         filePanel.setBorder(BorderFactory.createTitledBorder("Selected File"));
         filePanel.add(scrollPane, BorderLayout.CENTER);
 
-        addFileToPlaylistsButton = new JButton("Add File to Playlists");
-        addFileToPlaylistsButton.setEnabled(false);
+        selectPlaylistsForFilesButton = new JButton("Select Playlists for File");
+        selectPlaylistsForFilesButton.setEnabled(false);
         removeFileFromPlaylistButton = new JButton("Remove File from Playlist");
         removeFileFromPlaylistButton.setEnabled(false);
         removeFileFromLibraryButton = new JButton("Remove File from Library");
         removeFileFromLibraryButton.setEnabled(false);
 
         JPanel buttonPanel = new JPanel(new GridLayout(3, 1, SPACING, SPACING));
-        buttonPanel.add(addFileToPlaylistsButton);
+        buttonPanel.add(selectPlaylistsForFilesButton);
         buttonPanel.add(removeFileFromPlaylistButton);
         buttonPanel.add(removeFileFromLibraryButton);
         JPanel spacingPanel = new JPanel(new FlowLayout());
@@ -212,8 +218,8 @@ public class SlimTunes extends JFrame {
         fileMenu.add(exitItem);
 
         JMenu mediaMenu = new JMenu("Media");
-        addFileToPlaylistsItem = new JMenuItem("Add File to Playlist");
-        addFileToPlaylistsItem.setEnabled(false);
+        selectPlaylistsForFilesItem = new JMenuItem("Select Playlists for File");
+        selectPlaylistsForFilesItem.setEnabled(false);
         removeFileFromPlaylistItem = new JMenuItem("Remove File from Playlist");
         removeFileFromPlaylistItem.setEnabled(false);
         addFileToLibraryItem = new JMenuItem("Add File to Library");
@@ -221,7 +227,7 @@ public class SlimTunes extends JFrame {
         removeFileFromLibraryItem = new JMenuItem("Remove File from Library");
         removeFileFromLibraryItem.setEnabled(false);
 
-        mediaMenu.add(addFileToPlaylistsItem);
+        mediaMenu.add(selectPlaylistsForFilesItem);
         mediaMenu.add(removeFileFromPlaylistItem);
         mediaMenu.addSeparator();
         mediaMenu.add(addFileToLibraryItem);
@@ -235,17 +241,18 @@ public class SlimTunes extends JFrame {
         popupMenu = new JPopupMenu();
         removeFileFromLibraryPopupItem = new JMenuItem("Remove File from Playlist");
         removeFileFromLibraryPopupItem.setEnabled(false);
-        addFileToPlaylistsPopupItem = new JMenuItem("Add File to Playlists");
-        addFileToPlaylistsPopupItem.setEnabled(false);
+        selectPlaylistsForFilesPopupItem = new JMenuItem("Select Playlists for File");
+        selectPlaylistsForFilesPopupItem.setEnabled(false);
         removeFileFromPlaylistPopupItem = new JMenuItem("Remove File from Playlist");
         removeFileFromPlaylistPopupItem.setEnabled(false);
 
         popupMenu.add(removeFileFromLibraryPopupItem);
-        popupMenu.add(addFileToPlaylistsPopupItem);
+        popupMenu.add(selectPlaylistsForFilesPopupItem);
         popupMenu.add(removeFileFromPlaylistPopupItem);
 
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         pack();
+        setMinimumSize(new Dimension(getWidth() * 2 / 3, getHeight() / 2));
         setLocationRelativeTo(null);
         setVisible(true);
     }
