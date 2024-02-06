@@ -66,21 +66,26 @@ public class Controller {
         });
     }
 
-    private void quit() {
+    private boolean safeToContinue(String message) {
         if(changed) {
-            int answer = JOptionPane.showConfirmDialog(slimTunes, "Library has unsaved changes. Do you want to save before exiting?", "Save Library?", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+            int answer = JOptionPane.showConfirmDialog(slimTunes, message, "Save Library?", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
             if (answer == JOptionPane.CANCEL_OPTION)
-                return;
+                return false;
             if (answer == JOptionPane.YES_OPTION) {
                 if (currentFile != null) {
                     saveLibrary();
                 }
                 else if (!saveLibraryAs()) // If failed to save
-                    return;
+                    return false;
             }
         }
 
-        slimTunes.dispose();
+        return true;
+    }
+
+    private void quit() {
+        if (safeToContinue("Library has unsaved changes. Do you want to save before exiting?"))
+            slimTunes.dispose();
     }
 
     private void addButtonListeners() {
@@ -139,35 +144,37 @@ public class Controller {
 
     private void addMenuListeners() {
         // File menu
-        JMenuItem newItem = slimTunes.getNewItem();
-        newItem.addActionListener(e -> setLibrary(new Library()));
-
-        JMenuItem openItem = slimTunes.getOpenItem();
-        openItem.addActionListener(e -> openFile());
-
-        JMenuItem saveItem = slimTunes.getSaveItem();
-        saveItem.addActionListener(e -> saveLibrary());
-        JMenuItem saveAsItem = slimTunes.getSaveAsItem();
-        saveAsItem.addActionListener(e -> saveLibraryAs());
+        slimTunes.getNewItem().addActionListener(e -> newLibrary());
+        slimTunes.getOpenItem().addActionListener(e -> openFile());
+        slimTunes.getSaveItem().addActionListener(e -> saveLibrary());
+        slimTunes.getSaveAsItem().addActionListener(e -> saveLibraryAs());
 
         JMenuItem exitItem = slimTunes.getExitItem();
-        exitItem.addActionListener(e -> slimTunes.dispose());
+        exitItem.addActionListener(e -> quit());
 
         // Media menu
-        JMenuItem addFileToLibraryItem = slimTunes.getAddFileToLibraryItem();
-        addFileToLibraryItem.addActionListener(e -> addFileToLibrary());
+        slimTunes.getAddFileToLibraryItem().addActionListener(e -> addFileToLibrary());
+        slimTunes.getRemoveFileFromLibraryItem().addActionListener(e -> removeFileFromLibrary());
+        slimTunes.getAddFileToPlaylistsItem().addActionListener(e -> addFileToPlaylists());
+        slimTunes.getRemoveFileFromPlaylistItem().addActionListener(e -> removeFileFromPlaylist());
 
-        JMenuItem removeFileFromLibraryItem = slimTunes.getRemoveFileFromLibraryItem();
-        removeFileFromLibraryItem.addActionListener(e -> removeFileFromLibrary());
+        // Popup menu
+        slimTunes.getRemoveFileFromLibraryPopupItem().addActionListener(e -> removeFileFromLibrary());
+        slimTunes.getAddFileToPlaylistsPopupItem().addActionListener(e -> addFileToPlaylists());
+        slimTunes.getRemoveFileFromPlaylistPopupItem().addActionListener(e -> removeFileFromPlaylist());
+    }
 
-        JMenuItem addFileToPlaylistItem = slimTunes.getAddFileToLibraryItem();
-        addFileToPlaylistItem.addActionListener(e -> addFileToPlaylists());
-
-        JMenuItem removeFileFromPlaylistItem = slimTunes.getRemoveFileFromPlaylistItem();
-        removeFileFromPlaylistItem.addActionListener(e -> removeFileFromPlaylist());
+    private void newLibrary() {
+        if (safeToContinue("Library has unsaved changes. Do you want to save before creating a new library?")) {
+            setLibrary(new Library());
+            currentFile = null;
+            slimTunes.getSaveAsItem().setEnabled(true);
+            setChanged(false);
+        }
     }
 
     private void removeFileFromPlaylist() {
+
     }
 
     private void addFileToPlaylists() {
@@ -201,10 +208,7 @@ public class Controller {
             }
 
             for (Playlist playlist : removeLists) {
-                if (playlist.contains(file)) {
-                    playlist.remove(file);
-                    changed = true;
-                }
+                changed = changed || playlist.remove(file);
             }
         }
 
@@ -214,6 +218,31 @@ public class Controller {
     }
 
     private void removeFileFromLibrary() {
+        JList<FileList> playlists = slimTunes.getPlaylists();
+        JTable fileTable = slimTunes.getFileTable();
+        ListSelectionModel model = fileTable.getSelectionModel();
+        int[] selections = model.getSelectedIndices();
+        File[] files = new File[selections.length];
+
+        String fileText = files.length == 1 ? "this file" : "these files";
+
+        for (int i = 0; i < files.length; ++i)
+            files[i] = playlists.getSelectedValue().getFiles().get(fileTable.convertRowIndexToModel(selections[i]));
+
+        int answer = JOptionPane.showConfirmDialog(slimTunes, "Are you sure you want to remove " + fileText +
+                " from the library and all playlists?", "Remove from Library?", JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.WARNING_MESSAGE);
+
+        if (answer == JOptionPane.OK_OPTION) {
+            boolean changed = this.changed; // might already be changed
+            for (File file : files) {
+                for (Playlist playlist : library.getPlaylists())
+                    changed = changed || playlist.remove(file);
+
+                changed = changed || library.getFiles().remove(file);
+            }
+            setChanged(changed);
+        }
     }
 
     private void addFileToLibrary() {
@@ -265,20 +294,22 @@ public class Controller {
     }
 
     private void openFile() {
-        int result = xmlChooser.showOpenDialog(slimTunes);
-        if (result == JFileChooser.APPROVE_OPTION) {
-            java.io.File file = xmlChooser.getSelectedFile();
-            try {
-                Library library = new Library();
-                Reader reader = new Reader();
-                reader.read(file.toPath(), library);
+        if (safeToContinue("Library has unsaved changes. Do you want to save before opening a new library?")) {
+            int result = xmlChooser.showOpenDialog(slimTunes);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                java.io.File file = xmlChooser.getSelectedFile();
+                try {
+                    Library library = new Library();
+                    Reader reader = new Reader();
+                    reader.read(file.toPath(), library);
 
-                setLibrary(library);
-                currentFile = file;
-                slimTunes.getSaveAsItem().setEnabled(true);
-                setChanged(false);
-            } catch (ParserConfigurationException | IOException | SAXException ignore) {
-                JOptionPane.showMessageDialog(slimTunes, "Error opening file: " + file, "Open Error", JOptionPane.ERROR_MESSAGE);
+                    setLibrary(library);
+                    currentFile = file;
+                    slimTunes.getSaveAsItem().setEnabled(true);
+                    setChanged(false);
+                } catch (ParserConfigurationException | IOException | SAXException ignore) {
+                    JOptionPane.showMessageDialog(slimTunes, "Error opening file: " + file, "Open Error", JOptionPane.ERROR_MESSAGE);
+                }
             }
         }
     }

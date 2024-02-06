@@ -75,8 +75,8 @@ public class Playlist extends WriteXML implements FileList {
         return files.contains(file);
     }
 
-    public void remove(File file) {
-        files.remove(file);
+    public boolean remove(File file) {
+        return files.remove(file);
     }
 
     @Override

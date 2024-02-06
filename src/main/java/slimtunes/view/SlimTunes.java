@@ -144,7 +144,7 @@ public class SlimTunes extends JFrame {
         // File table
         JScrollPane pane = new JScrollPane(fileTable);
         JPanel listPanel = new JPanel(new BorderLayout());
-        listPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "File List"));
+        listPanel.setBorder(BorderFactory.createTitledBorder("File List"));
         listPanel.add(pane, BorderLayout.CENTER);
         add(listPanel, BorderLayout.CENTER);
 
@@ -157,7 +157,7 @@ public class SlimTunes extends JFrame {
         scrollPane.setBorder(BorderFactory.createEmptyBorder(SPACING, SPACING, SPACING, SPACING));
 
         JPanel filePanel = new JPanel(new BorderLayout());
-        filePanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Selected File"));
+        filePanel.setBorder(BorderFactory.createTitledBorder("Selected File"));
         filePanel.add(scrollPane, BorderLayout.CENTER);
 
         addFileToPlaylistsButton = new JButton("Add File to Playlists");
@@ -182,7 +182,7 @@ public class SlimTunes extends JFrame {
         playlists.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane playlistScrollPane = new JScrollPane(playlists);
         JPanel playlistPanel = new JPanel(new BorderLayout());
-        playlistPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Playlists"));
+        playlistPanel.setBorder(BorderFactory.createTitledBorder("Playlists"));
         playlistPanel.add(playlistScrollPane, BorderLayout.CENTER);
         add(playlistPanel, BorderLayout.WEST);
 
@@ -245,12 +245,6 @@ public class SlimTunes extends JFrame {
         popupMenu.add(removeFileFromPlaylistPopupItem);
 
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        /*
-        GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-        int width = device.getDisplayMode().getWidth();
-        int height = device.getDisplayMode().getHeight();
-        setSize(width/2, height/2);
-        */
         pack();
         setLocationRelativeTo(null);
         setVisible(true);

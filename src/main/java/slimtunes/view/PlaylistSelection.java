@@ -41,7 +41,7 @@ public class PlaylistSelection extends JDialog {
             title = "Selected File";
         }
 
-        filePanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), title));
+        filePanel.setBorder(BorderFactory.createTitledBorder(title));
 
         boolean first = true;
         StringBuilder builder = new StringBuilder("<html>");
@@ -75,7 +75,7 @@ public class PlaylistSelection extends JDialog {
         }
 
         scrollPane = new JScrollPane(playlistPanel);
-        scrollPane.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Choose Playlists"));
+        scrollPane.setBorder(BorderFactory.createTitledBorder("Choose Playlists"));
 
         // Buttons
         JPanel buttonPanel = new JPanel(new GridLayout(1, 2, SlimTunes.SPACING, SlimTunes.SPACING));
@@ -90,15 +90,10 @@ public class PlaylistSelection extends JDialog {
 
         GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
         int height = device.getDisplayMode().getHeight();
-        int width = device.getDisplayMode().getHeight();
-        //setSize(new Dimension(Math.min(fileLabel.getWidth() * 2, widestCheckbox * 2), height/2));
-        //setMinimumSize(new Dimension(widestCheckbox * 2, height/3));
-        //setPreferredSize(new Dimension(widestCheckbox * 2, height/2));
-        //scrollPane.setMaximumSize(new Dimension(width, height /2 ));
         scrollPane.setPreferredSize(new Dimension(widestCheckbox * 2, height /2 ));
 
         pack();
-
+        setMinimumSize(new Dimension(getWidth(), height / 2));
         setLocationRelativeTo(parent);
     }
 
