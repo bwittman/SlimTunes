@@ -20,6 +20,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
 
 public class Controller {
@@ -457,6 +459,19 @@ public class Controller {
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
                  UnsupportedLookAndFeelException ignore) {
         }
+        UIDefaults defaults = UIManager.getDefaults();
+        Enumeration<Object> keysEnumeration = defaults.keys();
+        ArrayList<Object> keysList = Collections.list(keysEnumeration);
+        for (Object key : keysList)
+        {
+            Object value = UIManager.get(key);
+            if (value != null) {
+                String text = value.toString();
+                if (text.contains("ColorUIResource"))
+                    System.out.println(key + ": " + text);
+            }
+        }
+
         new Controller();
     }
 }

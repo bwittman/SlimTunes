@@ -1,6 +1,5 @@
 package slimtunes.view;
 
-import com.jidesoft.swing.TristateCheckBox;
 import slimtunes.model.File;
 import slimtunes.model.Playlist;
 
@@ -16,8 +15,6 @@ public class PlaylistSelection extends JDialog {
     private final List<JCheckBox> checkBoxes = new ArrayList<>();
     private final List<Playlist> playlists;
 
-    private final SelectionManager selectionManager;
-
     public JButton getDoneButton() {
         return doneButton;
     }
@@ -31,16 +28,7 @@ public class PlaylistSelection extends JDialog {
         this.playlists = playlists;
 
         JPanel filePanel = new JPanel(new BorderLayout());
-        String title;
-        if (files.length > 1) {
-            selectionManager = new MultipleFileSelectionManager();
-            title = "Selected Files";
-        }
-        else {
-            selectionManager = new SingleFileSelectionManager();
-            title = "Selected File";
-        }
-
+        String title = files.length > 1 ? "Selected Files" : "Selected File";
         filePanel.setBorder(BorderFactory.createTitledBorder(title));
 
         boolean first = true;
@@ -66,7 +54,7 @@ public class PlaylistSelection extends JDialog {
         int widestCheckbox = 0;
 
         for (Playlist playlist : playlists) {
-            JCheckBox checkBox = selectionManager.createCheckBox(files, playlist);
+            JCheckBox checkBox = createCheckBox(files, playlist);
             int width = checkBox.getWidth();
             if (width > widestCheckbox)
                 widestCheckbox = width;
@@ -101,53 +89,42 @@ public class PlaylistSelection extends JDialog {
         addLists.clear();
         removeLists.clear();
         for (int i = 0; i < playlists.size(); ++i)
-            selectionManager.updatePlaylists(checkBoxes.get(i), playlists.get(i), addLists, removeLists);
+            updatePlaylists(checkBoxes.get(i), playlists.get(i), addLists, removeLists);
     }
 
+    private JCheckBox createCheckBox(File[] files, Playlist playlist) {
+        int count = 0;
+        for (File file : files) {
+            if (playlist.contains(file))
+                ++count;
+        }
 
-    private static class SingleFileSelectionManager implements SelectionManager {
-        @Override
-        public JCheckBox createCheckBox(File[] files, Playlist playlist) {
+        if (count == 0 || count == files.length) {
             JCheckBox checkBox = new JCheckBox(playlist.toString());
-            checkBox.setSelected(playlist.contains(files[0]));
+            checkBox.setSelected(count == files.length);
+            return checkBox;
+        }
+        else {
+            TristateCheckBox checkBox = new TristateCheckBox(playlist.toString());
+            checkBox.setIndeterminate();
             return checkBox;
         }
 
-        @Override
-        public void updatePlaylists(JCheckBox checkBox, Playlist playlist, List<Playlist> addLists, List<Playlist> removeLists) {
+    }
+
+
+    public void updatePlaylists(JCheckBox checkBox, Playlist playlist, List<Playlist> addLists, List<Playlist> removeLists) {
+        if (checkBox instanceof TristateCheckBox tristateCheckBox) {
+            if (tristateCheckBox.getState() == TristateButtonModel.State.SELECTED)
+                addLists.add(playlist);
+            else if (tristateCheckBox.getState() == TristateButtonModel.State.DESELECTED)
+                removeLists.add(playlist);
+        }
+        else {
             if (checkBox.isSelected())
                 addLists.add(playlist);
             else
                 removeLists.add(playlist);
-        }
-    }
-    private static class MultipleFileSelectionManager implements SelectionManager {
-        @Override
-        public JCheckBox createCheckBox(File[] files, Playlist playlist) {
-            TristateCheckBox checkBox = new TristateCheckBox(playlist.toString());
-            int count = 0;
-            for (File file : files) {
-                if (playlist.contains(file))
-                    ++count;
-            }
-
-            if (count == 0)
-                checkBox.setState(TristateCheckBox.STATE_UNSELECTED);
-            else if (count == files.length)
-                checkBox.setState(TristateCheckBox.STATE_SELECTED);
-            else
-                checkBox.setState(TristateCheckBox.STATE_MIXED);
-            return checkBox;
-        }
-
-        @Override
-        public void updatePlaylists(JCheckBox checkBox, Playlist playlist, List<Playlist> addLists, List<Playlist> removeLists) {
-            TristateCheckBox tristateCheckBox = (TristateCheckBox) checkBox;
-            if (tristateCheckBox.getState() == TristateCheckBox.STATE_SELECTED)
-                addLists.add(playlist);
-            else if (tristateCheckBox.getState() == TristateCheckBox.STATE_UNSELECTED)
-                removeLists.add(playlist);
-
         }
     }
 }
