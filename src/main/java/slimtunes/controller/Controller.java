@@ -196,6 +196,7 @@ public class Controller {
         slimTunes.getFileTableModel().fireTableDataChanged();
         slimTunes.getFileTable().clearSelection();
         slimTunes.getFileTable().repaint();
+        slimTunes.getSearchBar().setText(slimTunes.getSearchBar().getText());
         setChanged(changed);
     }
 
@@ -239,6 +240,8 @@ public class Controller {
         slimTunes.getFileTableModel().fireTableDataChanged();
         slimTunes.getFileTable().repaint();
         setChanged(changed);
+
+        slimTunes.getSearchBar().setText(slimTunes.getSearchBar().getText());
         playlistSelection.dispose();
     }
 
@@ -272,6 +275,7 @@ public class Controller {
             slimTunes.getFileTable().clearSelection();
             slimTunes.getFileTableModel().fireTableDataChanged();
             slimTunes.getFileTable().repaint();
+            slimTunes.getSearchBar().setText(slimTunes.getSearchBar().getText());
             setChanged(changed);
         }
     }
