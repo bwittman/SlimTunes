@@ -36,7 +36,7 @@ public class Controller {
     final JFileChooser mediaChooser = new JFileChooser();
     public Controller() {
         slimTunes = new SlimTunes();
-        library = new Library();
+        newLibrary();
 
         xmlChooser.setFileFilter(new FileFilter() {
             @Override
@@ -301,7 +301,7 @@ public class Controller {
     }
 
     private void setChanged(boolean value) {
-        String fileName = currentFile == null ? "" : " - " + currentFile;
+        String fileName = currentFile == null ? " - New Library" : " - " + currentFile;
         if (value) {
             slimTunes.setTitle(SlimTunes.TITLE + fileName + "*");
             slimTunes.getSaveItem().setEnabled(true);
