@@ -1,5 +1,6 @@
 package slimtunes.model;
 
+import org.apache.tika.metadata.Property;
 import slimtunes.model.xml.WriteXML;
 import slimtunes.model.xml.Writer;
 
@@ -23,6 +24,7 @@ public class File extends WriteXML {
         }
 
         public static final String[] NAMES = {"Track ID", "Name", "Artist", "Kind", "Size", "Total Time", "Date Modified", "Date Added", "Bit Rate", "Sample Rate", "Play Count", "Play Date", "Play Date UTC", "Persistent ID", "Track Type", "Location", "File Folder Count", "Library Folder Count", "Skip Count", "Skip Date", "Album Artist", "Composer", "Album", "Genre", "Track Number", "Year", "Track Count", "Artwork Count", "Sort Name", "Comments", "Normalization", "BPM", "Sort Album", "Sort Album Artist", "Sort Artist", "Disc Number", "Disc Count", "Grouping", "Work", "Sort Composer", "Volume Adjustment", "Compilation", "Part Of Gapless Album"};
+
     }
 
     public void addField(String key, String value) {

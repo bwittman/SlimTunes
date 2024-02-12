@@ -1,6 +1,12 @@
 package slimtunes.controller;
 
+import org.apache.tika.exception.TikaException;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.parser.ParseContext;
+import org.apache.tika.parser.mp3.Mp3Parser;
+import org.apache.tika.sax.BodyContentHandler;
 import org.xml.sax.SAXException;
+
 import slimtunes.model.*;
 import slimtunes.model.xml.Reader;
 import slimtunes.model.xml.Writer;
@@ -18,10 +24,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
+import java.util.*;
 import java.util.List;
 
 public class Controller {
@@ -34,6 +39,9 @@ public class Controller {
 
     final JFileChooser xmlChooser = new JFileChooser();
     final JFileChooser mediaChooser = new JFileChooser();
+
+    final String[] EXTENSIONS = {".aac", ".aiff", ".aif", ".aifc", ".flac", ".m4a", ".mp4", ".3gp", ".m4b", ".m4p", ".m4r", ".m4v", ".mp3", ".wav", ".wave"};
+
     public Controller() {
         slimTunes = new SlimTunes();
         newLibrary();
@@ -53,6 +61,34 @@ public class Controller {
         });
 
         xmlChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+        mediaChooser.setFileFilter(new FileFilter() {
+            @Override
+            public boolean accept(java.io.File file) {
+                if (file == null)
+                    return false;
+
+                String name = file.toString().toLowerCase();
+
+                if (file.isDirectory())
+                    return true;
+
+                // AAC, AIFF, Apple Lossless, MP3, and WAV
+                for (String extension : EXTENSIONS)
+                    if (name.endsWith(extension))
+                        return true;
+
+                return false;
+            }
+
+            @Override
+            public String getDescription() {
+                return "Media Files";
+            }
+        });
+
+        mediaChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+        mediaChooser.setMultiSelectionEnabled(true);
 
         addPlaylistListeners();
         addFileTableListeners();
@@ -281,6 +317,32 @@ public class Controller {
     }
 
     private void addFileToLibrary() {
+        int result = mediaChooser.showOpenDialog(slimTunes);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            java.io.File[] files = mediaChooser.getSelectedFiles();
+            for (java.io.File file : files) {
+                System.out.println(file);
+                try(FileInputStream input = new FileInputStream(file)) {
+                    String name = file.toString();
+
+                    if (name.endsWith(".mp3")) {
+                        //detecting the file type
+                        BodyContentHandler handler = new BodyContentHandler();
+                        Metadata metadata = new Metadata();
+                        ParseContext context = new ParseContext();
+
+                        //Mp3 parser
+                        Mp3Parser mp3Parser = new  Mp3Parser();
+                        mp3Parser.parse(input, handler, metadata, context);
+                        System.out.println(Arrays.toString(metadata.names()));
+                    }
+
+                    setChanged(true);
+                } catch (IOException | TikaException | SAXException e) {
+                    JOptionPane.showMessageDialog(slimTunes, "Error opening file: " + file, "Open Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        }
     }
 
     private boolean saveLibraryAs() {
@@ -463,6 +525,8 @@ public class Controller {
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
                  UnsupportedLookAndFeelException ignore) {
         }
+
+        /*
         UIDefaults defaults = UIManager.getDefaults();
         Enumeration<Object> keysEnumeration = defaults.keys();
         ArrayList<Object> keysList = Collections.list(keysEnumeration);
@@ -475,6 +539,8 @@ public class Controller {
                     System.out.println(key + ": " + text);
             }
         }
+
+         */
 
         new Controller();
     }
