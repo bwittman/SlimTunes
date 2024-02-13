@@ -1,5 +1,6 @@
 package slimtunes.model;
 
+import org.apache.tika.metadata.Metadata;
 import org.apache.tika.metadata.Property;
 import slimtunes.model.xml.WriteXML;
 import slimtunes.model.xml.Writer;
@@ -25,6 +26,141 @@ public class File extends WriteXML {
 
         public static final String[] NAMES = {"Track ID", "Name", "Artist", "Kind", "Size", "Total Time", "Date Modified", "Date Added", "Bit Rate", "Sample Rate", "Play Count", "Play Date", "Play Date UTC", "Persistent ID", "Track Type", "Location", "File Folder Count", "Library Folder Count", "Skip Count", "Skip Date", "Album Artist", "Composer", "Album", "Genre", "Track Number", "Year", "Track Count", "Artwork Count", "Sort Name", "Comments", "Normalization", "BPM", "Sort Album", "Sort Album Artist", "Sort Artist", "Disc Number", "Disc Count", "Grouping", "Work", "Sort Composer", "Volume Adjustment", "Compilation", "Part Of Gapless Album"};
 
+    }
+
+
+    public static File createMP3FromMetadata(Metadata metadata) {
+        File file = new File();
+        /*
+        TikaCoreProperties
+        static Property	ALTITUDE
+        static Property	COMMENTS
+        static Property	CONTENT_TYPE_HINT
+        This is currently used to identify Content-Type that may be included within a document, such as in html documents (e.g.
+        static Property	CONTRIBUTOR
+        static Property	COVERAGE
+        static Property	CREATED
+        static Property	CREATOR
+        static Property	CREATOR_TOOL
+        static Property	DESCRIPTION
+        static Property	EMBEDDED_RESOURCE_TYPE
+        See EMBEDDED_RESOURCE_TYPE
+        static Property	FORMAT
+        static Property	IDENTIFIER
+        static Property	KEYWORDS
+        static Property	LANGUAGE
+        static Property	LATITUDE
+        static Property	LONGITUDE
+        static Property	METADATA_DATE
+        static Property	MODIFIED
+        static Property	MODIFIER
+        static Property	PRINT_DATE
+        static Property	PUBLISHER
+        static Property	RATING
+        static Property	RELATION
+        static Property	RIGHTS
+        static Property	SOURCE
+
+         */
+
+        /*
+        XMPDM
+        static Property	ABS_PEAK_AUDIO_FILE_PATH
+"The absolute path to the file's peak audio file.
+static Property	ALBUM
+"The name of the album."
+static Property	ALBUM_ARTIST
+"The name of the album artist or group for compilation albums."
+static Property	ALT_TAPE_NAME
+"An alternative tape name, set via the project window or timecode dialog in Premiere.
+static Property	ARTIST
+"The name of the artist or artists."
+static Property	AUDIO_CHANNEL_TYPE
+"The audio channel type."
+static Property	AUDIO_COMPRESSOR
+"The audio compression used.
+static Property	AUDIO_MOD_DATE
+"The date and time when the audio was last modified."
+static Property	AUDIO_SAMPLE_RATE
+"The audio sample rate.
+static Property	AUDIO_SAMPLE_TYPE
+"The audio sample type."
+static Property	COMPILATION
+"An album created by various artists."
+static Property	COMPOSER
+"The composer's name."
+static Property	COPYRIGHT
+"The copyright information."
+static Property	DISC_NUMBER
+"The disc number for part of an album set."
+static Property	DURATION
+"The duration of the media file." Value is in Seconds, unless xmpDM:scale is also set.
+static Property	ENGINEER
+"The engineer's name."
+static Property	FILE_DATA_RATE
+"The file data rate in megabytes per second.
+static Property	GENRE
+"The name of the genre."
+static Property	INSTRUMENT
+"The musical instrument."
+static Property	KEY
+"The audio's musical key."
+static Property	LOG_COMMENT
+"User's log comments."
+static Property	LOOP
+"When true, the clip can be looped seamlessly."
+static Property	METADATA_MOD_DATE
+"The date and time when the metadata was last modified."
+static Property	NUMBER_OF_BEATS
+"The number of beats."
+static Property	PULL_DOWN
+"The sampling phase of film to be converted to video (pull-down)."
+static Property	RELATIVE_PEAK_AUDIO_FILE_PATH
+"The relative path to the file's peak audio file.
+static Property	RELEASE_DATE
+"The date the title was released."
+static Property	SCALE_TYPE
+"The musical scale used in the music.
+static Property	SCENE
+"The name of the scene."
+static Property	SHOT_DATE
+"The date and time when the video was shot."
+static Property	SHOT_LOCATION
+"The name of the location where the video was shot.
+static Property	SHOT_NAME
+"The name of the shot or take."
+static Property	SPEAKER_PLACEMENT
+"A description of the speaker angles from center front in degrees.
+static Property	STRETCH_MODE
+"The audio stretch mode."
+static Property	TAPE_NAME
+"The name of the tape from which the clip was captured, as set during the capture process."
+static Property	TEMPO
+"The audio's tempo."
+static Property	TIME_SIGNATURE
+"The time signature of the music."
+static Property	TRACK_NUMBER
+"A numeric value indicating the order of the audio file within its original recording."
+static Property	VIDEO_ALPHA_MODE
+"The alpha mode."
+static Property	VIDEO_ALPHA_UNITY_IS_TRANSPARENT
+"When true, unity is clear, when false, it is opaque."
+static Property	VIDEO_COLOR_SPACE
+"The color space."
+static Property	VIDEO_COMPRESSOR
+"Video compression used.
+static Property	VIDEO_FIELD_ORDER
+"The field order for video."
+static Property	VIDEO_FRAME_RATE
+"The video frame rate."
+static Property	VIDEO_MOD_DATE
+"The date and time when the video was last modified."
+static Property	VIDEO_PIXEL_ASPECT_RATIO
+"The aspect ratio, expressed as wd/ht.
+static Property	VIDEO_PIXEL_DEPTH
+         */
+
+        return file;
     }
 
     public void addField(String key, String value) {
