@@ -20,9 +20,15 @@ import java.time.ZoneOffset;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Represents a file (usually an audio file) stored in an iTunes library.
+ * Although the fields in an iTunes XML file are poorly documented, a good-faith
+ * effort has been made to fill in all applicable fields.
+ * Uses @see <a href="https://www.jthink.net/jaudiotagger/">JAudioTagger</a>
+ * for extracting media file metadata.
+ */
+
 public class File extends WriteXML {
-
-
 
     public enum Fields {
         TRACK_ID, NAME, ARTIST, KIND, SIZE, TOTAL_TIME, DATE_MODIFIED, DATE_ADDED, BIT_RATE, SAMPLE_RATE, PLAY_COUNT, PLAY_DATE, PLAY_DATE_UTC, PERSISTENT_ID, TRACK_TYPE, LOCATION, FILE_FOLDER_COUNT, LIBRARY_FOLDER_COUNT, SKIP_COUNT, SKIP_DATE, ALBUM_ARTIST, COMPOSER, ALBUM, GENRE, TRACK_NUMBER, YEAR, TRACK_COUNT, ARTWORK_COUNT, SORT_NAME, COMMENTS, NORMALIZATION, BPM, SORT_ALBUM, SORT_ALBUM_ARTIST, SORT_ARTIST, DISC_NUMBER, DISC_COUNT, GROUPING, WORK, SORT_COMPOSER, VOLUME_ADJUSTMENT, COMPILATION, PART_OF_GAPLESS_ALBUM;
@@ -42,7 +48,13 @@ public class File extends WriteXML {
 
     private static final Random RANDOM = new Random();
 
-    public static File createFile(Path path) {
+    /**
+     * Creates a new File object (if possible), filling in metadata fields when possible.
+     * A static method is used instead of a constructor so that
+     * @param path of file being created
+     * @return
+     */
+    public File(Path path) throws FileCreationException {
         try {
             AudioFile audioFile = AudioFileIO.read(path.toFile());
             Tag tag = audioFile.getTag();
@@ -52,9 +64,9 @@ public class File extends WriteXML {
             if (fileName.lastIndexOf('.') != -1)
                 extension = fileName.substring(fileName.lastIndexOf('.'));
 
-            File file = new File();
-            file.addField(Fields.NAME, tag.getFirst(FieldKey.TITLE));
-            file.addField(Fields.ARTIST, tag.getFirst(FieldKey.ARTIST));
+
+            addField(Fields.NAME, tag.getFirst(FieldKey.TITLE));
+            addField(Fields.ARTIST, tag.getFirst(FieldKey.ARTIST));
 
             String kind = switch (extension) {
                 case ".aac", ".m4a", ".mp4", ".m4r" -> "Purchased AAC audio file";
@@ -70,48 +82,47 @@ public class File extends WriteXML {
                 case ".wma" -> "Windows Media audio file"; // Non-standard iTunes
                 default -> null;
             };
-            file.addField(Fields.KIND, kind);
-            file.addField(Fields.SIZE, Files.size(path));
-            file.addField(Fields.TOTAL_TIME, audioHeader.getTrackLength());
-            file.addField(Fields.DATE_MODIFIED, Library.formatDate(LocalDateTime.ofEpochSecond(
+            addField(Fields.KIND, kind);
+            addField(Fields.SIZE, Files.size(path));
+            addField(Fields.TOTAL_TIME, audioHeader.getTrackLength());
+            addField(Fields.DATE_MODIFIED, Library.formatDate(LocalDateTime.ofEpochSecond(
                     Files.getLastModifiedTime(path).to(TimeUnit.SECONDS), 0, ZoneOffset.UTC)));
-            file.addField(Fields.DATE_ADDED, Library.formatDate(LocalDateTime.now()));
-            file.addField(Fields.BIT_RATE, audioHeader.getBitRate());
-            file.addField(Fields.SAMPLE_RATE, audioHeader.getSampleRate());
+            addField(Fields.DATE_ADDED, Library.formatDate(LocalDateTime.now()));
+            addField(Fields.BIT_RATE, audioHeader.getBitRate());
+            addField(Fields.SAMPLE_RATE, audioHeader.getSampleRate());
             // Skip: PLAY_COUNT, PLAY_DATE, PLAY_DATE_UTC
-            file.addField(Fields.PERSISTENT_ID, String.format("%016X", RANDOM.nextLong()));
-            file.addField(Fields.TRACK_TYPE, "File");
-            file.addField(Fields.LOCATION, Library.pathToString(path));
-            file.addField(Fields.FILE_FOLDER_COUNT, -1);
-            file.addField(Fields.LIBRARY_FOLDER_COUNT, -1);
+            // Assumption: Persistent ID just needs to be unique, so random is fine
+            addField(Fields.PERSISTENT_ID, String.format("%016X", RANDOM.nextLong()));
+            addField(Fields.TRACK_TYPE, "File");
+            addField(Fields.LOCATION, Library.pathToString(path));
+            addField(Fields.FILE_FOLDER_COUNT, -1);
+            addField(Fields.LIBRARY_FOLDER_COUNT, -1);
             // Skip: SKIP_COUNT, SKIP_DATE
-            file.addField(Fields.ALBUM_ARTIST, tag.getFirst(FieldKey.ALBUM_ARTIST));
-            file.addField(Fields.COMPOSER, tag.getFirst(FieldKey.COMPOSER));
-            file.addField(Fields.ALBUM, tag.getFirst(FieldKey.ALBUM));
-            file.addField(Fields.GENRE, tag.getFirst(FieldKey.GENRE));
-            file.addField(Fields.TRACK_NUMBER, tag.getFirst(FieldKey.TRACK));
-            file.addField(Fields.YEAR, tag.getFirst(FieldKey.YEAR));
-            file.addField(Fields.TRACK_COUNT, tag.getFirst(FieldKey.TRACK_TOTAL));
+            addField(Fields.ALBUM_ARTIST, tag.getFirst(FieldKey.ALBUM_ARTIST));
+            addField(Fields.COMPOSER, tag.getFirst(FieldKey.COMPOSER));
+            addField(Fields.ALBUM, tag.getFirst(FieldKey.ALBUM));
+            addField(Fields.GENRE, tag.getFirst(FieldKey.GENRE));
+            addField(Fields.TRACK_NUMBER, tag.getFirst(FieldKey.TRACK));
+            addField(Fields.YEAR, tag.getFirst(FieldKey.YEAR));
+            addField(Fields.TRACK_COUNT, tag.getFirst(FieldKey.TRACK_TOTAL));
             // Skip: ARTWORK_COUNT
-            file.addField(Fields.SORT_NAME, tag.getFirst(FieldKey.TITLE_SORT));
-            file.addField(Fields.COMMENTS, tag.getFirst(FieldKey.COMMENT));
+            addField(Fields.SORT_NAME, tag.getFirst(FieldKey.TITLE_SORT));
+            addField(Fields.COMMENTS, tag.getFirst(FieldKey.COMMENT));
             // Skip: NORMALIZATION
-            file.addField(Fields.BPM, tag.getFirst(FieldKey.BPM));
-            file.addField(Fields.SORT_ALBUM, tag.getFirst(FieldKey.ALBUM_SORT));
-            file.addField(Fields.SORT_ALBUM_ARTIST, tag.getFirst(FieldKey.ALBUM_ARTIST_SORT));
-            file.addField(Fields.SORT_ARTIST, tag.getFirst(FieldKey.ARTIST_SORT));
-            file.addField(Fields.DISC_NUMBER, tag.getFirst(FieldKey.DISC_NO));
-            file.addField(Fields.DISC_COUNT, tag.getFirst(FieldKey.DISC_TOTAL));
-            file.addField(Fields.GROUPING, tag.getFirst(FieldKey.GROUPING));
-            file.addField(Fields.WORK, tag.getFirst(FieldKey.WORK));
-            file.addField(Fields.SORT_COMPOSER, tag.getFirst(FieldKey.COMPOSER_SORT));
+            addField(Fields.BPM, tag.getFirst(FieldKey.BPM));
+            addField(Fields.SORT_ALBUM, tag.getFirst(FieldKey.ALBUM_SORT));
+            addField(Fields.SORT_ALBUM_ARTIST, tag.getFirst(FieldKey.ALBUM_ARTIST_SORT));
+            addField(Fields.SORT_ARTIST, tag.getFirst(FieldKey.ARTIST_SORT));
+            addField(Fields.DISC_NUMBER, tag.getFirst(FieldKey.DISC_NO));
+            addField(Fields.DISC_COUNT, tag.getFirst(FieldKey.DISC_TOTAL));
+            addField(Fields.GROUPING, tag.getFirst(FieldKey.GROUPING));
+            addField(Fields.WORK, tag.getFirst(FieldKey.WORK));
+            addField(Fields.SORT_COMPOSER, tag.getFirst(FieldKey.COMPOSER_SORT));
             // Skip: VOLUME_ADJUSTMENT
-            file.addField(Fields.COMPILATION, tag.getFirst(FieldKey.IS_COMPILATION));
+            addField(Fields.COMPILATION, tag.getFirst(FieldKey.IS_COMPILATION));
             // Skip: PART_OF_GAPLESS_ALBUM
-
-            return file;
         } catch (CannotReadException | IOException | TagException | ReadOnlyFileException | InvalidAudioFrameException e) {
-            return null;
+            throw new FileCreationException();
         }
     }
 

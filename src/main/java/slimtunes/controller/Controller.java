@@ -333,12 +333,12 @@ public class Controller {
 
             for (Path path : files) {
                 System.out.println(path);
-
-                File file = File.createFile(path);
-                if (file == null)
-                    JOptionPane.showMessageDialog(slimTunes, "Error opening file: " + file, "Open Error", JOptionPane.ERROR_MESSAGE);
-                else
-                    library.addFile(file);
+                try {
+                    library.addFile(new File(path));
+                }
+                catch(FileCreationException e) {
+                    JOptionPane.showMessageDialog(slimTunes, "Error opening file: " + path, "Open Error", JOptionPane.ERROR_MESSAGE);
+                }
             }
         }
     }
