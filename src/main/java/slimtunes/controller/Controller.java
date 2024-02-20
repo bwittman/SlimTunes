@@ -1,11 +1,5 @@
 package slimtunes.controller;
 
-import org.apache.tika.exception.TikaException;
-import org.apache.tika.metadata.Metadata;
-import org.apache.tika.metadata.TikaCoreProperties;
-import org.apache.tika.parser.ParseContext;
-import org.apache.tika.parser.mp3.Mp3Parser;
-import org.apache.tika.sax.BodyContentHandler;
 import org.xml.sax.SAXException;
 
 import slimtunes.model.*;
@@ -27,8 +21,12 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class Controller {
 
@@ -40,8 +38,7 @@ public class Controller {
 
     final JFileChooser xmlChooser = new JFileChooser();
     final JFileChooser mediaChooser = new JFileChooser();
-
-    final String[] EXTENSIONS = {".aac", ".aiff", ".aif", ".aifc", ".flac", ".m4a", ".mp4", ".3gp", ".m4b", ".m4p", ".m4r", ".m4v", ".mp3", ".wav", ".wave"};
+    final String[] EXTENSIONS = {".aac", ".aiff", ".aif", ".aifc", ".dsf", ".flac", ".m4a", ".mp4", ".m4b", ".m4p", ".m4r", ".m4v", ".mov", ".mp3", ".oga", ".ogg", ".ogx", ".wav", ".wave", ".wma"};
 
     public Controller() {
         slimTunes = new SlimTunes();
@@ -320,37 +317,28 @@ public class Controller {
     private void addFileToLibrary() {
         int result = mediaChooser.showOpenDialog(slimTunes);
         if (result == JFileChooser.APPROVE_OPTION) {
-            java.io.File[] files = mediaChooser.getSelectedFiles();
-            for (java.io.File file : files) {
-                System.out.println(file);
-                try(FileInputStream input = new FileInputStream(file)) {
-                    String name = file.toString();
-
-                    if (name.endsWith(".mp3")) {
-                        //detecting the file type
-                        BodyContentHandler handler = new BodyContentHandler();
-                        Metadata metadata = new Metadata();
-                        ParseContext context = new ParseContext();
-
-                        //Mp3 parser
-                        Mp3Parser mp3Parser = new  Mp3Parser();
-                        mp3Parser.parse(input, handler, metadata, context);
-                        System.out.println("Title: " + metadata.get(TikaCoreProperties.TITLE));
-
-                        File libraryFile = new File();
-
-
-                        //TRACK_ID, NAME, ARTIST, KIND, SIZE, TOTAL_TIME, DATE_MODIFIED, DATE_ADDED, BIT_RATE, SAMPLE_RATE, PLAY_COUNT, PLAY_DATE, PLAY_DATE_UTC, PERSISTENT_ID, TRACK_TYPE, LOCATION, FILE_FOLDER_COUNT, LIBRARY_FOLDER_COUNT, SKIP_COUNT, SKIP_DATE, ALBUM_ARTIST, COMPOSER, ALBUM, GENRE, TRACK_NUMBER, YEAR, TRACK_COUNT, ARTWORK_COUNT, SORT_NAME, COMMENTS, NORMALIZATION, BPM, SORT_ALBUM, SORT_ALBUM_ARTIST, SORT_ARTIST, DISC_NUMBER, DISC_COUNT, GROUPING, WORK, SORT_COMPOSER, VOLUME_ADJUSTMENT, COMPILATION, PART_OF_GAPLESS_ALBUM
-
-
-
-                        System.out.println(Arrays.toString(metadata.names()));
+            java.io.File[] selection = mediaChooser.getSelectedFiles();
+            Set<Path> files = new HashSet<>();
+            for (java.io.File file : selection) {
+                if (file.isDirectory()) {
+                    try (Stream<Path> stream = Files.walk(file.toPath())) {
+                        stream.filter(Files::isRegularFile)
+                                .forEach(files::add);
                     }
-
-                    setChanged(true);
-                } catch (IOException | TikaException | SAXException e) {
-                    JOptionPane.showMessageDialog(slimTunes, "Error opening file: " + file, "Open Error", JOptionPane.ERROR_MESSAGE);
+                    catch (IOException ignored) {}
                 }
+                else if(file.isFile())
+                    files.add(file.toPath());
+            }
+
+            for (Path path : files) {
+                System.out.println(path);
+
+                File file = File.createFile(path);
+                if (file == null)
+                    JOptionPane.showMessageDialog(slimTunes, "Error opening file: " + file, "Open Error", JOptionPane.ERROR_MESSAGE);
+                else
+                    library.addFile(file);
             }
         }
     }

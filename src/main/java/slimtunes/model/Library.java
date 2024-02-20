@@ -12,6 +12,8 @@ import java.util.*;
 
 public class Library extends WriteXML implements FileList {
 
+
+
     public enum Fields {
         MAJOR_VERSION, MINOR_VERSION, DATE, APPLICATION_VERSION, FEATURES, SHOW_CONTENT_RATINGS, MUSIC_FOLDER, LIBRARY_PERSISTENT_ID;
 
@@ -36,6 +38,8 @@ public class Library extends WriteXML implements FileList {
     private Boolean showContentRatings;
     private Path musicFolder;
     private String libraryPersistentId;
+
+    private int lastIndex = 0;
 
     // Use of LinkedHashMap allows us to preserve order
     private final Map<Integer, File> files = new LinkedHashMap<>();
@@ -115,9 +119,17 @@ public class Library extends WriteXML implements FileList {
     }
 
     public void putFile(int trackId, File file) {
+        if (trackId > lastIndex)
+            lastIndex = trackId;
         files.put(trackId, file);
         if (file.getArtist() != null)
             artists.add(file.getArtist());
+    }
+
+    public void addFile(File file) {
+        ++lastIndex;
+        file.addField(File.Fields.TRACK_ID, "" + lastIndex);
+        putFile(lastIndex, file);
     }
 
     public void write(Writer writer) {

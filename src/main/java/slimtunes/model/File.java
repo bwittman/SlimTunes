@@ -1,12 +1,24 @@
 package slimtunes.model;
 
-import org.apache.tika.metadata.Metadata;
-import org.apache.tika.metadata.Property;
+import org.jaudiotagger.audio.AudioFile;
+import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.audio.AudioHeader;
+import org.jaudiotagger.audio.exceptions.CannotReadException;
+import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
+import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
+import org.jaudiotagger.tag.FieldKey;
+import org.jaudiotagger.tag.Tag;
+import org.jaudiotagger.tag.TagException;
 import slimtunes.model.xml.WriteXML;
 import slimtunes.model.xml.Writer;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 public class File extends WriteXML {
 
@@ -28,10 +40,100 @@ public class File extends WriteXML {
 
     }
 
+    private static final Random RANDOM = new Random();
 
-    public static File createMP3FromMetadata(Metadata metadata) {
+    public static File createFile(Path path) {
+        try {
+            AudioFile audioFile = AudioFileIO.read(path.toFile());
+            Tag tag = audioFile.getTag();
+            AudioHeader audioHeader = audioFile.getAudioHeader();
+            String fileName = path.getFileName().toString().toLowerCase();
+            String extension = "";
+            if (fileName.lastIndexOf('.') != -1)
+                extension = fileName.substring(fileName.lastIndexOf('.'));
+
+            File file = new File();
+            file.addField(Fields.NAME, tag.getFirst(FieldKey.TITLE));
+            file.addField(Fields.ARTIST, tag.getFirst(FieldKey.ARTIST));
+
+            String kind = switch (extension) {
+                case ".aac", ".m4a", ".mp4", ".m4r" -> "Purchased AAC audio file";
+                case ".m4b", ".m4p" -> "Protected AAC audio file";
+                case ".m4v" -> "Protected MPEG-4 video file";
+                case ".aiff", ".aif", ".aifc" -> "AIFF audio file"; // Non-standard iTunes
+                case ".dsf" -> "DSD stream file"; // Non-standard iTunes
+                case ".flac" -> "FLAC audio file"; // Non-standard iTunes
+                case ".mov" -> "QuickTime movie file";
+                case ".mp3" -> "MPEG audio file";
+                case ".oga", ".ogg", ".ogx" -> "Ogg audio file"; // Non-standard iTunes
+                case ".wav", ".wave" -> "WAV audio file"; // Non-standard iTunes
+                case ".wma" -> "Windows Media audio file"; // Non-standard iTunes
+                default -> null;
+            };
+            file.addField(Fields.KIND, kind);
+            file.addField(Fields.SIZE, Files.size(path));
+            file.addField(Fields.TOTAL_TIME, audioHeader.getTrackLength());
+            file.addField(Fields.DATE_MODIFIED, Library.formatDate(LocalDateTime.ofEpochSecond(
+                    Files.getLastModifiedTime(path).to(TimeUnit.SECONDS), 0, ZoneOffset.UTC)));
+            file.addField(Fields.DATE_ADDED, Library.formatDate(LocalDateTime.now()));
+            file.addField(Fields.BIT_RATE, audioHeader.getBitRate());
+            file.addField(Fields.SAMPLE_RATE, audioHeader.getSampleRate());
+            // Skip: PLAY_COUNT, PLAY_DATE, PLAY_DATE_UTC
+            file.addField(Fields.PERSISTENT_ID, String.format("%016X", RANDOM.nextLong()));
+            file.addField(Fields.TRACK_TYPE, "File");
+            file.addField(Fields.LOCATION, Library.pathToString(path));
+            file.addField(Fields.FILE_FOLDER_COUNT, -1);
+            file.addField(Fields.LIBRARY_FOLDER_COUNT, -1);
+            // Skip: SKIP_COUNT, SKIP_DATE
+            file.addField(Fields.ALBUM_ARTIST, tag.getFirst(FieldKey.ALBUM_ARTIST));
+            file.addField(Fields.COMPOSER, tag.getFirst(FieldKey.COMPOSER));
+            file.addField(Fields.ALBUM, tag.getFirst(FieldKey.ALBUM));
+            file.addField(Fields.GENRE, tag.getFirst(FieldKey.GENRE));
+            file.addField(Fields.TRACK_NUMBER, tag.getFirst(FieldKey.TRACK));
+            file.addField(Fields.YEAR, tag.getFirst(FieldKey.YEAR));
+            file.addField(Fields.TRACK_COUNT, tag.getFirst(FieldKey.TRACK_TOTAL));
+            // Skip: ARTWORK_COUNT
+            file.addField(Fields.SORT_NAME, tag.getFirst(FieldKey.TITLE_SORT));
+            file.addField(Fields.COMMENTS, tag.getFirst(FieldKey.COMMENT));
+            // Skip: NORMALIZATION
+            file.addField(Fields.BPM, tag.getFirst(FieldKey.BPM));
+            file.addField(Fields.SORT_ALBUM, tag.getFirst(FieldKey.ALBUM_SORT));
+            file.addField(Fields.SORT_ALBUM_ARTIST, tag.getFirst(FieldKey.ALBUM_ARTIST_SORT));
+            file.addField(Fields.SORT_ARTIST, tag.getFirst(FieldKey.ARTIST_SORT));
+            file.addField(Fields.DISC_NUMBER, tag.getFirst(FieldKey.DISC_NO));
+            file.addField(Fields.DISC_COUNT, tag.getFirst(FieldKey.DISC_TOTAL));
+            file.addField(Fields.GROUPING, tag.getFirst(FieldKey.GROUPING));
+            file.addField(Fields.WORK, tag.getFirst(FieldKey.WORK));
+            file.addField(Fields.SORT_COMPOSER, tag.getFirst(FieldKey.COMPOSER_SORT));
+            // Skip: VOLUME_ADJUSTMENT
+            file.addField(Fields.COMPILATION, tag.getFirst(FieldKey.IS_COMPILATION));
+            // Skip: PART_OF_GAPLESS_ALBUM
+
+            return file;
+        } catch (CannotReadException | IOException | TagException | ReadOnlyFileException | InvalidAudioFrameException e) {
+            return null;
+        }
+    }
+
+/*
+    public static File createMP3FromMetadata(Metadata metadata, int trackId) {
         File file = new File();
-        /*
+        file.addField(Fields.TRACK_ID, "" + trackId);
+        file.addField(Fields.NAME, metadata.get(TikaCoreProperties.TITLE));
+        file.addField(Fields.ARTIST, metadata.get(XMPDM.ARTIST));
+        //TODO: "Kind",
+        //TODO: "Size"
+
+        file.addField(Fields.TOTAL_TIME, metadata.get(XMPDM.DURATION));
+        file.addField(Fields.DATE_MODIFIED, metadata.get(XMPDM.AUDIO_MOD_DATE));
+        file.addField(Fields.DATE_ADDED, Library.formatDate(LocalDateTime.now()));
+
+        "Bit Rate",
+
+                file.addField(Fields.SAMPLE_RATE, metadata.get(XMPDM.AUDIO_SAMPLE_RATE));
+          "Play Count", "Play Date", "Play Date UTC", "Persistent ID", "Track Type", "Location", "File Folder Count", "Library Folder Count", "Skip Count", "Skip Date", "Album Artist", "Composer", "Album", "Genre", "Track Number", "Year", "Track Count", "Artwork Count", "Sort Name", "Comments", "Normalization", "BPM", "Sort Album", "Sort Album Artist", "Sort Artist", "Disc Number", "Disc Count", "Grouping", "Work", "Sort Composer", "Volume Adjustment", "Compilation", "Part Of Gapless Album"};
+
+
         TikaCoreProperties
         static Property	ALTITUDE
         static Property	COMMENTS
@@ -61,9 +163,7 @@ public class File extends WriteXML {
         static Property	RIGHTS
         static Property	SOURCE
 
-         */
 
-        /*
         XMPDM
         static Property	ABS_PEAK_AUDIO_FILE_PATH
 "The absolute path to the file's peak audio file.
@@ -158,13 +258,20 @@ static Property	VIDEO_MOD_DATE
 static Property	VIDEO_PIXEL_ASPECT_RATIO
 "The aspect ratio, expressed as wd/ht.
 static Property	VIDEO_PIXEL_DEPTH
-         */
+
 
         return file;
     }
 
-    public void addField(String key, String value) {
-        Fields field = Fields.valueOf(Fields.nameToValue(key.trim()));
+ */
+
+    private void addField(Fields field, long value) {
+        addField(field, "" + value);
+    }
+
+    public void addField(Fields field, String value) {
+        if (value == null)
+            return;
         switch (field) {
             case TRACK_ID -> trackId = Integer.parseInt(value);
             case NAME -> name = value;
@@ -210,6 +317,10 @@ static Property	VIDEO_PIXEL_DEPTH
             case COMPILATION -> compilation = Boolean.parseBoolean(value);
             case PART_OF_GAPLESS_ALBUM -> partOfGaplessAlbum = Boolean.parseBoolean(value);
         }
+    }
+
+    public void addField(String key, String value) {
+        addField(Fields.valueOf(Fields.nameToValue(key.trim())), value);
     }
 
     private Integer trackId;
