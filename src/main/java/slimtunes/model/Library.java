@@ -12,8 +12,6 @@ import java.util.*;
 
 public class Library extends WriteXML implements FileList {
 
-
-
     public enum Fields {
         MAJOR_VERSION, MINOR_VERSION, DATE, APPLICATION_VERSION, FEATURES, SHOW_CONTENT_RATINGS, MUSIC_FOLDER, LIBRARY_PERSISTENT_ID;
 

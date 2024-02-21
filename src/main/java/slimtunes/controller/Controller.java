@@ -306,6 +306,12 @@ public class Controller {
                     changed = true;
             }
 
+            int selectedPlaylist = slimTunes.getPlaylists().getSelectedIndex();
+            DefaultListModel<FileList> listModel = (DefaultListModel<FileList>) slimTunes.getPlaylists().getModel();
+            listModel.remove(0);
+            listModel.insertElementAt(library, 0);
+            slimTunes.getPlaylists().setSelectedIndex(selectedPlaylist);
+
             slimTunes.getFileTable().clearSelection();
             slimTunes.getFileTableModel().fireTableDataChanged();
             slimTunes.getFileTable().repaint();
@@ -331,15 +337,30 @@ public class Controller {
                     files.add(file.toPath());
             }
 
+            boolean changed = this.changed;
             for (Path path : files) {
                 System.out.println(path);
                 try {
                     library.addFile(new File(path));
+                    changed = true;
                 }
                 catch(FileCreationException e) {
                     JOptionPane.showMessageDialog(slimTunes, "Error opening file: " + path, "Open Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
+
+            int selectedPlaylist = slimTunes.getPlaylists().getSelectedIndex();
+            DefaultListModel<FileList> listModel = (DefaultListModel<FileList>) slimTunes.getPlaylists().getModel();
+            listModel.remove(0);
+            listModel.insertElementAt(library, 0);
+            slimTunes.getPlaylists().setSelectedIndex(selectedPlaylist);
+
+            slimTunes.getFileTable().clearSelection();
+            slimTunes.getFileTableModel().fireTableDataChanged();
+            slimTunes.getFileTable().repaint();
+            slimTunes.getSearchBar().setText(slimTunes.getSearchBar().getText());
+            slimTunes.revalidate();
+            setChanged(changed);
         }
     }
 

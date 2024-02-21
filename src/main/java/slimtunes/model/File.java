@@ -48,6 +48,8 @@ public class File extends WriteXML {
 
     private static final Random RANDOM = new Random();
 
+    public File() {}
+
     /**
      * Creates a new File object (if possible), filling in metadata fields when possible.
      * A static method is used instead of a constructor so that
@@ -88,7 +90,10 @@ public class File extends WriteXML {
             addField(Fields.DATE_MODIFIED, Library.formatDate(LocalDateTime.ofEpochSecond(
                     Files.getLastModifiedTime(path).to(TimeUnit.SECONDS), 0, ZoneOffset.UTC)));
             addField(Fields.DATE_ADDED, Library.formatDate(LocalDateTime.now()));
-            addField(Fields.BIT_RATE, audioHeader.getBitRate());
+            String bitRate = audioHeader.getBitRate().trim();
+            if (bitRate.startsWith("~"))
+                bitRate = bitRate.substring(1);
+            addField(Fields.BIT_RATE, bitRate);
             addField(Fields.SAMPLE_RATE, audioHeader.getSampleRate());
             // Skip: PLAY_COUNT, PLAY_DATE, PLAY_DATE_UTC
             // Assumption: Persistent ID just needs to be unique, so random is fine
@@ -103,7 +108,12 @@ public class File extends WriteXML {
             addField(Fields.ALBUM, tag.getFirst(FieldKey.ALBUM));
             addField(Fields.GENRE, tag.getFirst(FieldKey.GENRE));
             addField(Fields.TRACK_NUMBER, tag.getFirst(FieldKey.TRACK));
-            addField(Fields.YEAR, tag.getFirst(FieldKey.YEAR));
+            String year = tag.getFirst(FieldKey.YEAR).trim();
+            if (year.indexOf('-') == 4) // 2005-03-29
+                year = year.substring(0, 4);
+            else if (year.lastIndexOf('-') == year.length() - 5) // 03-29-2005
+                year = year.substring(year.length() - 4);
+            addField(Fields.YEAR, year);
             addField(Fields.TRACK_COUNT, tag.getFirst(FieldKey.TRACK_TOTAL));
             // Skip: ARTWORK_COUNT
             addField(Fields.SORT_NAME, tag.getFirst(FieldKey.TITLE_SORT));
@@ -281,7 +291,7 @@ static Property	VIDEO_PIXEL_DEPTH
     }
 
     public void addField(Fields field, String value) {
-        if (value == null)
+        if (value == null || value.isEmpty())
             return;
         switch (field) {
             case TRACK_ID -> trackId = Integer.parseInt(value);
@@ -550,7 +560,7 @@ static Property	VIDEO_PIXEL_DEPTH
         append(builder, "Library Folder Count", libraryFolderCount);
         append(builder, "Skip Count", skipCount);
         append(builder, "Skip Date", skipDate);
-        append(builder, "Album Arist", albumArtist);
+        append(builder, "Album Artist", albumArtist);
         append(builder, "Composer", composer);
         append(builder, "Album", album);
         append(builder, "Genre", genre);
