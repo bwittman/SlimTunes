@@ -86,7 +86,8 @@ public class File extends WriteXML {
             };
             addField(Fields.KIND, kind);
             addField(Fields.SIZE, Files.size(path));
-            addField(Fields.TOTAL_TIME, audioHeader.getTrackLength());
+            // Track length comes out of library in seconds but is stored as milliseconds
+            addField(Fields.TOTAL_TIME, Math.round(audioHeader.getPreciseTrackLength() * 1000.0));
             addField(Fields.DATE_MODIFIED, Library.formatDate(LocalDateTime.ofEpochSecond(
                     Files.getLastModifiedTime(path).to(TimeUnit.SECONDS), 0, ZoneOffset.UTC)));
             addField(Fields.DATE_ADDED, Library.formatDate(LocalDateTime.now()));

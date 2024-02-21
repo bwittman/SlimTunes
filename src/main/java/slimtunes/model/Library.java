@@ -12,6 +12,8 @@ import java.util.*;
 
 public class Library extends WriteXML implements FileList {
 
+
+
     public enum Fields {
         MAJOR_VERSION, MINOR_VERSION, DATE, APPLICATION_VERSION, FEATURES, SHOW_CONTENT_RATINGS, MUSIC_FOLDER, LIBRARY_PERSISTENT_ID;
 
@@ -102,6 +104,7 @@ public class Library extends WriteXML implements FileList {
     }
 
     public static String formatDate(LocalDateTime dateTime) {
+        dateTime = dateTime.minusNanos(dateTime.getNano()); // Remove fractional seconds
         return dateTime.format(DateTimeFormatter.ISO_DATE_TIME) + "Z";
     }
     public static String cleanData(String data) {
@@ -122,6 +125,15 @@ public class Library extends WriteXML implements FileList {
         files.put(trackId, file);
         if (file.getArtist() != null)
             artists.add(file.getArtist());
+    }
+
+    public boolean removeFile(File file) {
+        if(file != null) {
+            File result = files.remove(file.getTrackId());
+            return result != null;
+        }
+
+        return false;
     }
 
     public void addFile(File file) {
