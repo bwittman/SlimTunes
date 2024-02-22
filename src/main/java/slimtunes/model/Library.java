@@ -152,14 +152,14 @@ public class Library extends FileTableModel implements WriteXML {
         writer.plist(true);
         writer.dict(true);
 
-        WriteXML.write(writer, Fields.MAJOR_VERSION, majorVersion);
-        WriteXML.write(writer, Fields.MINOR_VERSION, minorVersion);
-        WriteXML.write(writer, Fields.DATE, date);
-        WriteXML.write(writer, Fields.APPLICATION_VERSION, applicationVersion);
-        WriteXML.write(writer, Fields.FEATURES, features);
-        WriteXML.write(writer, Fields.SHOW_CONTENT_RATINGS, showContentRatings);
-        WriteXML.write(writer, Fields.MUSIC_FOLDER, musicFolder);
-        WriteXML.write(writer, Fields.LIBRARY_PERSISTENT_ID, libraryPersistentId);
+        writer.write(Fields.MAJOR_VERSION, majorVersion);
+        writer.write(Fields.MINOR_VERSION, minorVersion);
+        writer.write(Fields.DATE, date);
+        writer.write(Fields.APPLICATION_VERSION, applicationVersion);
+        writer.write(Fields.FEATURES, features);
+        writer.write(Fields.SHOW_CONTENT_RATINGS, showContentRatings);
+        writer.write(Fields.MUSIC_FOLDER, musicFolder);
+        writer.write(Fields.LIBRARY_PERSISTENT_ID, libraryPersistentId);
 
         writer.keyDict("Tracks"); // open dict
 

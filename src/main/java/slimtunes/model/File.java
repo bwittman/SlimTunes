@@ -479,61 +479,61 @@ static Property	VIDEO_PIXEL_DEPTH
     }
 
     public void write(Writer writer) {
-        WriteXML.write(writer, Fields.TRACK_ID, trackId);
-        WriteXML.write(writer, Fields.NAME, name);
-        WriteXML.write(writer, Fields.ARTIST, artist);
+        writer.write(Fields.TRACK_ID, trackId);
+        writer.write(Fields.NAME, name);
+        writer.write(Fields.ARTIST, artist);
 
-        WriteXML.write(writer, Fields.ALBUM_ARTIST, albumArtist); // optional
-        WriteXML.write(writer, Fields.COMPOSER, composer); // optional
-        WriteXML.write(writer, Fields.ALBUM, album); // optional
-        WriteXML.write(writer, Fields.GROUPING, grouping); // optional
-        WriteXML.write(writer, Fields.WORK, work); // optional
-        WriteXML.write(writer, Fields.GENRE, genre); // optional
+        writer.write(Fields.ALBUM_ARTIST, albumArtist); // optional
+        writer.write(Fields.COMPOSER, composer); // optional
+        writer.write(Fields.ALBUM, album); // optional
+        writer.write(Fields.GROUPING, grouping); // optional
+        writer.write(Fields.WORK, work); // optional
+        writer.write(Fields.GENRE, genre); // optional
 
-        WriteXML.write(writer, Fields.KIND, kind);
-        WriteXML.write(writer, Fields.SIZE, size);
-        WriteXML.write(writer, Fields.TOTAL_TIME, totalTime);
+        writer.write(Fields.KIND, kind);
+        writer.write(Fields.SIZE, size);
+        writer.write(Fields.TOTAL_TIME, totalTime);
 
-        WriteXML.write(writer, Fields.DISC_NUMBER, discNumber); // optional
-        WriteXML.write(writer, Fields.DISC_COUNT, discCount); // optional
+        writer.write(Fields.DISC_NUMBER, discNumber); // optional
+        writer.write(Fields.DISC_COUNT, discCount); // optional
 
-        WriteXML.write(writer, Fields.TRACK_NUMBER, trackNumber); // optional
-        WriteXML.write(writer, Fields.TRACK_COUNT, trackCount); // optional
-        WriteXML.write(writer, Fields.YEAR, year); // optional
-        WriteXML.write(writer, Fields.BPM, bpm); // optional
+        writer.write(Fields.TRACK_NUMBER, trackNumber); // optional
+        writer.write(Fields.TRACK_COUNT, trackCount); // optional
+        writer.write(Fields.YEAR, year); // optional
+        writer.write(Fields.BPM, bpm); // optional
 
-        WriteXML.write(writer, Fields.DATE_MODIFIED, dateModified);
-        WriteXML.write(writer, Fields.DATE_ADDED, dateAdded);
-        WriteXML.write(writer, Fields.BIT_RATE, bitRate);
-        WriteXML.write(writer, Fields.SAMPLE_RATE, sampleRate);
+        writer.write(Fields.DATE_MODIFIED, dateModified);
+        writer.write(Fields.DATE_ADDED, dateAdded);
+        writer.write(Fields.BIT_RATE, bitRate);
+        writer.write(Fields.SAMPLE_RATE, sampleRate);
 
-        WriteXML.write(writer, Fields.VOLUME_ADJUSTMENT, volumeAdjustment); // optional
-        WriteXML.write(writer, Fields.PART_OF_GAPLESS_ALBUM, partOfGaplessAlbum); // optional
+        writer.write(Fields.VOLUME_ADJUSTMENT, volumeAdjustment); // optional
+        writer.write(Fields.PART_OF_GAPLESS_ALBUM, partOfGaplessAlbum); // optional
 
-        WriteXML.write(writer,Fields.COMMENTS, comments); // optional
+        writer.write(Fields.COMMENTS, comments); // optional
         //if (comments != null)
           //  writer.keyMultilineString(Fields.COMMENTS.toString(), comments); // optional
 
-        WriteXML.write(writer, Fields.PLAY_COUNT, playCount);
-        WriteXML.write(writer, Fields.PLAY_DATE, playDate);
-        WriteXML.write(writer, Fields.PLAY_DATE_UTC, playDateUTC);
+        writer.write(Fields.PLAY_COUNT, playCount);
+        writer.write(Fields.PLAY_DATE, playDate);
+        writer.write(Fields.PLAY_DATE_UTC, playDateUTC);
 
-        WriteXML.write(writer, Fields.SKIP_COUNT, skipCount); // optional
-        WriteXML.write(writer, Fields.SKIP_DATE, skipDate); // optional
-        WriteXML.write(writer, Fields.NORMALIZATION, normalization); // optional
-        WriteXML.write(writer, Fields.COMPILATION, compilation); // optional
-        WriteXML.write(writer, Fields.ARTWORK_COUNT, artworkCount); // optional
-        WriteXML.write(writer, Fields.SORT_ALBUM, sortAlbum); // optional
-        WriteXML.write(writer, Fields.SORT_ALBUM_ARTIST, sortAlbumArtist); // optional
-        WriteXML.write(writer, Fields.SORT_ARTIST, sortArtist); // optional
-        WriteXML.write(writer, Fields.SORT_COMPOSER, sortComposer); // optional
-        WriteXML.write(writer, Fields.SORT_NAME, sortName); // optional
+        writer.write(Fields.SKIP_COUNT, skipCount); // optional
+        writer.write(Fields.SKIP_DATE, skipDate); // optional
+        writer.write(Fields.NORMALIZATION, normalization); // optional
+        writer.write(Fields.COMPILATION, compilation); // optional
+        writer.write(Fields.ARTWORK_COUNT, artworkCount); // optional
+        writer.write(Fields.SORT_ALBUM, sortAlbum); // optional
+        writer.write(Fields.SORT_ALBUM_ARTIST, sortAlbumArtist); // optional
+        writer.write(Fields.SORT_ARTIST, sortArtist); // optional
+        writer.write(Fields.SORT_COMPOSER, sortComposer); // optional
+        writer.write(Fields.SORT_NAME, sortName); // optional
 
-        WriteXML.write(writer, Fields.PERSISTENT_ID, persistentID);
-        WriteXML.write(writer, Fields.TRACK_TYPE, trackType);
-        WriteXML.write(writer, Fields.LOCATION, location);
-        WriteXML.write(writer, Fields.FILE_FOLDER_COUNT, fileFolderCount);
-        WriteXML.write(writer, Fields.LIBRARY_FOLDER_COUNT, libraryFolderCount);
+        writer.write(Fields.PERSISTENT_ID, persistentID);
+        writer.write(Fields.TRACK_TYPE, trackType);
+        writer.write(Fields.LOCATION, location);
+        writer.write(Fields.FILE_FOLDER_COUNT, fileFolderCount);
+        writer.write(Fields.LIBRARY_FOLDER_COUNT, libraryFolderCount);
     }
     public String toString() {
         return artist + " - " + name;

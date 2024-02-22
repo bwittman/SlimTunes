@@ -132,6 +132,25 @@ public class Writer {
         return this;
     }
 
+    public Writer write(Object key, Object value) {
+        String keyName = key.toString();
+        if (value instanceof Integer)
+            keyInteger(keyName, Long.valueOf((Integer) value));
+        else if(value instanceof Long)
+            keyInteger(keyName, (Long) value);
+        else if(value instanceof LocalDateTime)
+            keyDate(keyName, (LocalDateTime) value);
+        else if(value instanceof String)
+            keyString(keyName, (String) value);
+        else if(value instanceof Boolean)
+            keyBoolean(keyName, (Boolean) value);
+        else if(value instanceof Path)
+            keyPath(keyName, (Path)value);
+
+        // Otherwise, nothing gets written (meaning null values)
+        return this;
+    }
+
     public void close() {
         writer.close();
     }

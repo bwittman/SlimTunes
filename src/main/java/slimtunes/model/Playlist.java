@@ -81,19 +81,19 @@ public class Playlist extends FileTableModel implements WriteXML {
 
     @Override
     public void write(Writer writer) {
-        WriteXML.write(writer, Fields.NAME, name);
-        WriteXML.write(writer, Fields.DESCRIPTION, description);
-        WriteXML.write(writer, Fields.MASTER, master);
-        WriteXML.write(writer, Fields.PLAYLIST_ID, playlistId);
-        WriteXML.write(writer, Fields.PLAYLIST_PERSISTENT_ID, playlistPersistentId);
-        WriteXML.write(writer, Fields.DISTINGUISHED_KIND, distinguishedKind);
-        WriteXML.write(writer, Fields.MUSIC, music);
-        WriteXML.write(writer, Fields.MOVIES, movies);
-        WriteXML.write(writer, Fields.TV_SHOWS, tvShows);
-        WriteXML.write(writer, Fields.VISIBLE, visible);
-        WriteXML.write(writer, Fields.PODCASTS, podcasts);
-        WriteXML.write(writer, Fields.AUDIOBOOKS, audiobooks);
-        WriteXML.write(writer, Fields.ALL_ITEMS, allItems);
+        writer.write(Fields.NAME, name);
+        writer.write(Fields.DESCRIPTION, description);
+        writer.write(Fields.MASTER, master);
+        writer.write(Fields.PLAYLIST_ID, playlistId);
+        writer.write(Fields.PLAYLIST_PERSISTENT_ID, playlistPersistentId);
+        writer.write(Fields.DISTINGUISHED_KIND, distinguishedKind);
+        writer.write(Fields.MUSIC, music);
+        writer.write(Fields.MOVIES, movies);
+        writer.write(Fields.TV_SHOWS, tvShows);
+        writer.write(Fields.VISIBLE, visible);
+        writer.write(Fields.PODCASTS, podcasts);
+        writer.write(Fields.AUDIOBOOKS, audiobooks);
+        writer.write(Fields.ALL_ITEMS, allItems);
         if (smartInfo != null)
             writer.keyData(Fields.SMART_INFO.toString(), smartInfo);
         if (smartCriteria != null)
