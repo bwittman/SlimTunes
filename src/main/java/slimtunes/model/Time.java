@@ -1,6 +1,6 @@
 package slimtunes.model;
 public class Time implements Comparable<Time> {
-    private int milliseconds;
+    private final int milliseconds;
 
     public Time(int milliseconds) {
         this.milliseconds = milliseconds;

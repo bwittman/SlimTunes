@@ -98,7 +98,7 @@ public class Reader implements DictionaryProcessor {
                 if (child.getNodeName().equals("dict")) {
                     processDictionary((Element)child, (k,v) -> {
                         int trackId = Integer.parseInt(v.getTextContent());
-                        currentPlaylist.addFile(currentLibrary.getFile(trackId));
+                        currentPlaylist.add(currentLibrary.getFile(trackId));
                     });
                 }
             }

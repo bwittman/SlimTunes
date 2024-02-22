@@ -1,7 +1,6 @@
 package slimtunes.view;
-
-import slimtunes.model.FileList;
 import slimtunes.model.FileTableModel;
+import slimtunes.model.Library;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,7 +10,7 @@ public class SlimTunes extends JFrame {
 
     public static final String TITLE = "SlimTunes";
     public static final int SPACING = 10;
-    private final JList<FileList> playlists;
+    private final JList<FileTableModel> playlists;
     private final JLabel fileLabel;
     private final JTable fileTable;
 
@@ -103,7 +102,7 @@ public class SlimTunes extends JFrame {
         return removeFileFromPlaylistItem;
     }
 
-    public JList<FileList> getPlaylists() {
+    public JList<FileTableModel> getPlaylists() {
         return playlists;
     }
 
@@ -115,19 +114,14 @@ public class SlimTunes extends JFrame {
         return fileTable;
     }
 
-    public FileTableModel getFileTableModel() {
-        return fileTableModel;
-    }
-
     public FileTableModel fileTableModel;
 
     public JTextField getSearchBar() { return searchBar; }
 
-    public SlimTunes() {
+    public SlimTunes(Library library) {
         super(TITLE);
 
-        fileTableModel = new FileTableModel(new ArrayList<>());
-        fileTable = new JTable(fileTableModel);
+        fileTable = new JTable(library);
         FileTableModel.setWidths(fileTable);
         fileTable.setAutoCreateRowSorter(true);
         /* {
@@ -184,8 +178,11 @@ public class SlimTunes extends JFrame {
         add(filePanel, BorderLayout.EAST);
 
         // Playlists
-        playlists = new JList<>(new DefaultListModel<>());
+        DefaultListModel<FileTableModel> listModel = new DefaultListModel<>();
+        listModel.addElement(library);
+        playlists = new JList<>(listModel);
         playlists.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        playlists.setSelectedIndex(0);
         JScrollPane playlistScrollPane = new JScrollPane(playlists);
         JPanel playlistPanel = new JPanel(new BorderLayout());
         playlistPanel.setBorder(BorderFactory.createTitledBorder("Playlists"));
@@ -208,7 +205,6 @@ public class SlimTunes extends JFrame {
         saveItem = new JMenuItem("Save");
         saveItem.setEnabled(false);
         saveAsItem = new JMenuItem("Save As...");
-        saveAsItem.setEnabled(false);
         exitItem = new JMenuItem("Exit");
         fileMenu.add(newItem);
         fileMenu.add(openItem);
@@ -223,7 +219,6 @@ public class SlimTunes extends JFrame {
         removeFileFromPlaylistItem = new JMenuItem("Remove File from Playlist");
         removeFileFromPlaylistItem.setEnabled(false);
         addFileToLibraryItem = new JMenuItem("Add File to Library");
-        addFileToLibraryItem.setEnabled(false);
         removeFileFromLibraryItem = new JMenuItem("Remove File from Library");
         removeFileFromLibraryItem.setEnabled(false);
 

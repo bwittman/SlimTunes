@@ -19,11 +19,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Stream;
@@ -41,8 +39,8 @@ public class Controller {
     final String[] EXTENSIONS = {".aac", ".aiff", ".aif", ".aifc", ".dsf", ".flac", ".m4a", ".mp4", ".m4b", ".m4p", ".m4r", ".m4v", ".mov", ".mp3", ".oga", ".ogg", ".ogx", ".wav", ".wave", ".wma"};
 
     public Controller() {
-        slimTunes = new SlimTunes();
-        newLibrary();
+        slimTunes = new SlimTunes(new Library());
+        //newLibrary();
 
         xmlChooser.setFileFilter(new FileFilter() {
             @Override
@@ -156,7 +154,7 @@ public class Controller {
     }
 
     private void search() {
-        if(library.getFiles().size() > 0) {
+        if(library.getRowCount() > 0) {
             RowFilter<FileTableModel, Object> filter = null;
             String text = slimTunes.getSearchBar().getText().trim().toLowerCase();
             if (!text.isEmpty()) {
@@ -204,26 +202,25 @@ public class Controller {
         if (safeToContinue("Library has unsaved changes. Do you want to save before creating a new library?")) {
             setLibrary(new Library());
             currentFile = null;
-            slimTunes.getSaveAsItem().setEnabled(true);
             setChanged(false);
         }
     }
 
     private void removeFileFromPlaylist() {
-        JList<FileList> playlists = slimTunes.getPlaylists();
+        JList<FileTableModel> playlists = slimTunes.getPlaylists();
         JTable fileTable = slimTunes.getFileTable();
         ListSelectionModel model = fileTable.getSelectionModel();
         int[] selections = model.getSelectedIndices();
         File[] files = new File[selections.length];
 
-        FileList playlist = playlists.getSelectedValue();
+        FileTableModel playlist = playlists.getSelectedValue();
         for (int i = 0; i < files.length; ++i)
-            files[i] = playlist.getFiles().get(fileTable.convertRowIndexToModel(selections[i]));
+            files[i] = playlist.get(fileTable.convertRowIndexToModel(selections[i]));
 
         boolean changed = this.changed; // might already be changed
 
         for (File file : files) {
-            if (playlist.getFiles().remove(file))
+            if (playlist.remove(file))
                 changed = true;
         }
 
@@ -234,14 +231,14 @@ public class Controller {
     }
 
     private void selectPlaylistsForFiles() {
-        JList<FileList> playlists = slimTunes.getPlaylists();
+        JList<FileTableModel> playlists = slimTunes.getPlaylists();
         JTable fileTable = slimTunes.getFileTable();
         ListSelectionModel model = fileTable.getSelectionModel();
         int[] selections = model.getSelectedIndices();
         File[] files = new File[selections.length];
 
         for (int i = 0; i < files.length; ++i)
-            files[i] = playlists.getSelectedValue().getFiles().get(fileTable.convertRowIndexToModel(selections[i]));
+            files[i] = playlists.getSelectedValue().get(fileTable.convertRowIndexToModel(selections[i]));
 
         PlaylistSelection playlistSelection = new PlaylistSelection(slimTunes, files, library.getPlaylists());
         playlistSelection.getCancelButton().addActionListener(e -> playlistSelection.dispose());
@@ -258,7 +255,7 @@ public class Controller {
         for (File file : files) {
             for (Playlist playlist : addLists) {
                 if (!playlist.contains(file)) {
-                    playlist.addFile(file);
+                    playlist.add(file);
                     changed = true;
                 }
             }
@@ -278,7 +275,7 @@ public class Controller {
     }
 
     private void removeFileFromLibrary() {
-        JList<FileList> playlists = slimTunes.getPlaylists();
+        JList<FileTableModel> playlists = slimTunes.getPlaylists();
         JTable fileTable = slimTunes.getFileTable();
         ListSelectionModel model = fileTable.getSelectionModel();
         int[] selections = model.getSelectedIndices();
@@ -287,7 +284,7 @@ public class Controller {
         String fileText = files.length == 1 ? "this file" : "these files";
 
         for (int i = 0; i < files.length; ++i)
-            files[i] = playlists.getSelectedValue().getFiles().get(fileTable.convertRowIndexToModel(selections[i]));
+            files[i] = playlists.getSelectedValue().get(fileTable.convertRowIndexToModel(selections[i]));
 
         int answer = JOptionPane.showConfirmDialog(slimTunes, "Are you sure you want to remove " + fileText +
                 " from the library and all playlists?", "Remove from Library?", JOptionPane.OK_CANCEL_OPTION,
@@ -300,7 +297,7 @@ public class Controller {
                     if (playlist.remove(file))
                         changed = true;
 
-                if (library.removeFile(file))
+                if (library.remove(file))
                     changed = true;
             }
 
@@ -332,7 +329,7 @@ public class Controller {
             for (Path path : files) {
                 System.out.println(path);
                 try {
-                    library.addFile(new File(path));
+                    library.add(new File(path));
                     changed = true;
                 }
                 catch(FileCreationException e) {
@@ -415,7 +412,7 @@ public class Controller {
 
     private void setLibrary(Library library) {
         this.library = library;
-        DefaultListModel<FileList> listModel = new DefaultListModel<>();
+        DefaultListModel<FileTableModel> listModel = new DefaultListModel<>();
 
         listModel.addElement(library);
         for (Playlist playlist : library.getPlaylists())
@@ -423,8 +420,6 @@ public class Controller {
 
         slimTunes.getPlaylists().setModel(listModel);
         slimTunes.getPlaylists().setSelectedIndex(0);
-        slimTunes.getAddFileToLibraryItem().setEnabled(true);
-        slimTunes.getFileTableModel().fireTableDataChanged();
         slimTunes.getFileTable().clearSelection();
         slimTunes.getFileTable().repaint();
         slimTunes.revalidate();
@@ -454,7 +449,7 @@ public class Controller {
     }
 
     private void updateStatus() {
-        JList<FileList> playlists = slimTunes.getPlaylists();
+        JList<FileTableModel> playlists = slimTunes.getPlaylists();
         JLabel fileLabel = slimTunes.getFileLabel();
         JTable fileTable = slimTunes.getFileTable();
         int selectedRows = fileTable.getSelectedRowCount();
@@ -465,7 +460,7 @@ public class Controller {
         }
         else if (fileTable.getSelectedRowCount() == 1) {
             int row = fileTable.convertRowIndexToModel(fileTable.getSelectedRow());
-            String information = playlists.getSelectedValue().getFiles().get(row).getInformation();
+            String information = playlists.getSelectedValue().get(row).getInformation();
             lines = (int) information.codePoints().filter(ch -> ch == '\n').count();
             fileLabel.setText("<html>" + information.replaceAll("\n", "<br/>") + "</html>");
         }
@@ -507,7 +502,7 @@ public class Controller {
     }
 
     private void addPlaylistListeners() {
-        JList<FileList> playlists = slimTunes.getPlaylists();
+        JList<FileTableModel> playlists = slimTunes.getPlaylists();
 
         playlists.getSelectionModel().addListSelectionListener(event -> {
             setPlaylist(playlists.getSelectedValue());
@@ -515,11 +510,11 @@ public class Controller {
         });
     }
 
-    private void setPlaylist(FileList playlist) {
+    private void setPlaylist(FileTableModel playlist) {
         JTable fileTable = slimTunes.getFileTable();
         if (playlist == null)
             playlist = library;
-        fileTable.setModel(new FileTableModel(playlist.getFiles()));
+        fileTable.setModel(playlist);
         FileTableModel.setWidths(fileTable);
         updateStatus();
     }

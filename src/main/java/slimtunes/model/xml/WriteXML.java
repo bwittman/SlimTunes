@@ -3,10 +3,10 @@ package slimtunes.model.xml;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 
-public abstract class WriteXML {
-    public abstract void write(Writer writer);
+public interface WriteXML {
+    void write(Writer writer);
 
-    protected void write(Writer writer, Object key, Object value) {
+    static void write(Writer writer, Object key, Object value) {
         String keyName = key.toString();
         if (value instanceof Integer)
             writer.keyInteger(keyName, Long.valueOf((Integer) value));

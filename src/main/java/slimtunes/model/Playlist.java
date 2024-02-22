@@ -5,9 +5,7 @@ import slimtunes.model.xml.Writer;
 
 import java.util.*;
 
-public class Playlist extends WriteXML implements FileList {
-
-
+public class Playlist extends FileTableModel implements WriteXML {
 
     public enum Fields {
         NAME, DESCRIPTION, MASTER, PLAYLIST_ID, PLAYLIST_PERSISTENT_ID, DISTINGUISHED_KIND, MUSIC, MOVIES, TV_SHOWS, PODCASTS, AUDIOBOOKS, SMART_INFO, SMART_CRITERIA,  VISIBLE, ALL_ITEMS;
@@ -63,37 +61,39 @@ public class Playlist extends WriteXML implements FileList {
 
     private final List<File> files = new ArrayList<>();
 
-    public List<File> getFiles() {
-        return files;
-    }
-
-    public void addFile(File file) {
+    @Override
+    public void add(File file) {
         files.add(file);
+        fireTableDataChanged();
     }
 
     public boolean contains(File file) {
         return files.contains(file);
     }
 
+    @Override
     public boolean remove(File file) {
-        return files.remove(file);
+        boolean removed = files.remove(file);
+        if (removed)
+            fireTableDataChanged();
+        return removed;
     }
 
     @Override
     public void write(Writer writer) {
-        write(writer, Fields.NAME, name);
-        write(writer, Fields.DESCRIPTION, description);
-        write(writer, Fields.MASTER, master);
-        write(writer, Fields.PLAYLIST_ID, playlistId);
-        write(writer, Fields.PLAYLIST_PERSISTENT_ID, playlistPersistentId);
-        write(writer, Fields.DISTINGUISHED_KIND, distinguishedKind);
-        write(writer, Fields.MUSIC, music);
-        write(writer, Fields.MOVIES, movies);
-        write(writer, Fields.TV_SHOWS, tvShows);
-        write(writer, Fields.VISIBLE, visible);
-        write(writer, Fields.PODCASTS, podcasts);
-        write(writer, Fields.AUDIOBOOKS, audiobooks);
-        write(writer, Fields.ALL_ITEMS, allItems);
+        WriteXML.write(writer, Fields.NAME, name);
+        WriteXML.write(writer, Fields.DESCRIPTION, description);
+        WriteXML.write(writer, Fields.MASTER, master);
+        WriteXML.write(writer, Fields.PLAYLIST_ID, playlistId);
+        WriteXML.write(writer, Fields.PLAYLIST_PERSISTENT_ID, playlistPersistentId);
+        WriteXML.write(writer, Fields.DISTINGUISHED_KIND, distinguishedKind);
+        WriteXML.write(writer, Fields.MUSIC, music);
+        WriteXML.write(writer, Fields.MOVIES, movies);
+        WriteXML.write(writer, Fields.TV_SHOWS, tvShows);
+        WriteXML.write(writer, Fields.VISIBLE, visible);
+        WriteXML.write(writer, Fields.PODCASTS, podcasts);
+        WriteXML.write(writer, Fields.AUDIOBOOKS, audiobooks);
+        WriteXML.write(writer, Fields.ALL_ITEMS, allItems);
         if (smartInfo != null)
             writer.keyData(Fields.SMART_INFO.toString(), smartInfo);
         if (smartCriteria != null)
@@ -111,6 +111,15 @@ public class Playlist extends WriteXML implements FileList {
         }
     }
 
+    @Override
+    public int getRowCount() {
+        return files.size();
+    }
+
+    @Override
+    public File get(int rowIndex) {
+        return files.get(rowIndex);
+    }
 
     @Override
     public String toString() {

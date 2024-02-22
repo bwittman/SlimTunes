@@ -10,9 +10,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-public class Library extends WriteXML implements FileList {
-
-
+public class Library extends FileTableModel implements WriteXML {
+    
 
     public enum Fields {
         MAJOR_VERSION, MINOR_VERSION, DATE, APPLICATION_VERSION, FEATURES, SHOW_CONTENT_RATINGS, MUSIC_FOLDER, LIBRARY_PERSISTENT_ID;
@@ -43,6 +42,8 @@ public class Library extends WriteXML implements FileList {
 
     // Use of LinkedHashMap allows us to preserve order
     private final Map<Integer, File> files = new LinkedHashMap<>();
+    
+    private List<File> fileList = null;
     private final Set<String> artists = new TreeSet<>();
     private final List<Playlist> playlists = new ArrayList<>();
 
@@ -115,10 +116,6 @@ public class Library extends WriteXML implements FileList {
         return comment.replaceAll("\r\n", "\n");
     }
 
-    public List<File> getFiles() {
-        return new ArrayList<>(files.values());
-    }
-
     public void putFile(int trackId, File file) {
         if (trackId > lastIndex)
             lastIndex = trackId;
@@ -127,19 +124,27 @@ public class Library extends WriteXML implements FileList {
             artists.add(file.getArtist());
     }
 
-    public boolean removeFile(File file) {
+    @Override
+    public boolean remove(File file) {
         if(file != null) {
             File result = files.remove(file.getTrackId());
+            if (result != null) {
+                fileList = null;
+                fireTableDataChanged();
+            }
             return result != null;
         }
 
         return false;
     }
 
-    public void addFile(File file) {
+    @Override
+    public void add(File file) {
         ++lastIndex;
         file.addField(File.Fields.TRACK_ID, "" + lastIndex);
         putFile(lastIndex, file);
+        fileList = null;
+        fireTableDataChanged();
     }
 
     public void write(Writer writer) {
@@ -147,22 +152,22 @@ public class Library extends WriteXML implements FileList {
         writer.plist(true);
         writer.dict(true);
 
-        write(writer, Fields.MAJOR_VERSION, majorVersion);
-        write(writer, Fields.MINOR_VERSION, minorVersion);
-        write(writer, Fields.DATE, date);
-        write(writer, Fields.APPLICATION_VERSION, applicationVersion);
-        write(writer, Fields.FEATURES, features);
-        write(writer, Fields.SHOW_CONTENT_RATINGS, showContentRatings);
-        write(writer, Fields.MUSIC_FOLDER, musicFolder);
-        write(writer, Fields.LIBRARY_PERSISTENT_ID, libraryPersistentId);
+        WriteXML.write(writer, Fields.MAJOR_VERSION, majorVersion);
+        WriteXML.write(writer, Fields.MINOR_VERSION, minorVersion);
+        WriteXML.write(writer, Fields.DATE, date);
+        WriteXML.write(writer, Fields.APPLICATION_VERSION, applicationVersion);
+        WriteXML.write(writer, Fields.FEATURES, features);
+        WriteXML.write(writer, Fields.SHOW_CONTENT_RATINGS, showContentRatings);
+        WriteXML.write(writer, Fields.MUSIC_FOLDER, musicFolder);
+        WriteXML.write(writer, Fields.LIBRARY_PERSISTENT_ID, libraryPersistentId);
 
         writer.keyDict("Tracks"); // open dict
 
-            for (Map.Entry<Integer, File> entry : files.entrySet()) {
-                writer.keyDict(entry.getKey().toString()); // open dict
-                entry.getValue().write(writer);
-                writer.dict(false);
-            }
+        for (Map.Entry<Integer, File> entry : files.entrySet()) {
+            writer.keyDict(entry.getKey().toString()); // open dict
+            entry.getValue().write(writer);
+            writer.dict(false);
+        }
 
         writer.dict(false);
 
@@ -186,12 +191,23 @@ public class Library extends WriteXML implements FileList {
         return "<html><b>All Files</b></html>";
     }
 
-
-
     public File getFile(int trackId) {
         return files.get(trackId);
     }
     public void addPlaylist(Playlist playlist) { playlists.add(playlist); }
+
+    @Override
+    public int getRowCount() {
+        return files.size();
+    }
+
+    @Override
+    public File get(int rowIndex) {
+        if (fileList == null)
+            fileList = new ArrayList<>(files.values());
+        return fileList.get(rowIndex);
+    }
+
 
     public List<Playlist> getPlaylists() { return playlists; }
 }

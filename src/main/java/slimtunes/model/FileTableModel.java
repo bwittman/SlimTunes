@@ -1,29 +1,27 @@
 package slimtunes.model;
 
+import slimtunes.model.xml.WriteXML;
+
 import javax.swing.*;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
 import java.time.LocalTime;
 import java.util.List;
 
 import static slimtunes.model.File.Fields;
 
-public class FileTableModel extends AbstractTableModel {
-    List<File> files;
+public abstract class FileTableModel extends AbstractTableModel {
 
     private static final File.Fields[] COLUMNS = new Fields[] {
             File.Fields.TRACK_ID, File.Fields.NAME, File.Fields.ARTIST, File.Fields.ALBUM, File.Fields.TRACK_NUMBER, File.Fields.TOTAL_TIME, File.Fields.BIT_RATE, File.Fields.YEAR, File.Fields.GENRE,
     };
 
-    public FileTableModel(List<File> files) {
-        this.files = files;
-    }
 
     @Override
-    public int getRowCount() {
-        return files.size();
-    }
+    public abstract int getRowCount();
 
     @Override
     public int getColumnCount() {
@@ -79,6 +77,8 @@ public class FileTableModel extends AbstractTableModel {
       }
     }
 
+
+
     @Override
     public String getColumnName(int column) {
         if (column < 0 || column >= getColumnCount())
@@ -97,12 +97,16 @@ public class FileTableModel extends AbstractTableModel {
         };
     }
 
+    public abstract File get(int rowIndex);
+    public abstract boolean remove(File file);
+    public abstract void add(File file);
+
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        if (rowIndex < 0 || rowIndex >= files.size() || columnIndex < 0 || columnIndex >= getColumnCount())
+        if (rowIndex < 0 || rowIndex >= getRowCount() || columnIndex < 0 || columnIndex >= getColumnCount())
             return null;
 
-        File file = files.get(rowIndex);
+        File file = get(rowIndex);
         return switch(COLUMNS[columnIndex]){
             case TRACK_ID -> rowIndex + 1;
             case NAME -> file.getName();
