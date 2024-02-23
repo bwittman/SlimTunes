@@ -188,7 +188,8 @@ public class Library extends FileTableModel implements WriteXML {
 
     @Override
     public String toString() {
-        return "<html><b>All Files</b></html>";
+        // Non-breaking spaces make All Files look less cramped
+        return "<html><b>All Files</b>&nbsp;&nbsp;&nbsp;&nbsp;</html>";
     }
 
     public File getFileById(int trackId) {

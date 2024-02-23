@@ -193,9 +193,9 @@ public class Controller {
         slimTunes.getRemoveFileFromPlaylistItem().addActionListener(e -> removeFileFromPlaylist());
 
         // Popup menu
-        slimTunes.getRemoveFileFromLibraryPopupItem().addActionListener(e -> removeFileFromLibrary());
         slimTunes.getSelectPlaylistsForFilesPopupItem().addActionListener(e -> selectPlaylistsForFiles());
         slimTunes.getRemoveFileFromPlaylistPopupItem().addActionListener(e -> removeFileFromPlaylist());
+        slimTunes.getRemoveFileFromLibraryPopupItem().addActionListener(e -> removeFileFromLibrary());
     }
 
     private void newLibrary() {
@@ -495,7 +495,7 @@ public class Controller {
         final String removeFromLibrary = "Remove File" + s + " from Library";
         slimTunes.getRemoveFileFromLibraryItem().setText(removeFromLibrary);
         slimTunes.getRemoveFileFromLibraryButton().setText(removeFromLibrary);
-        slimTunes.getRemoveFileFromLibraryPopupItem().setText(removeFromPlaylist);
+        slimTunes.getRemoveFileFromLibraryPopupItem().setText(removeFromLibrary);
         slimTunes.getRemoveFileFromLibraryItem().setEnabled(value);
         slimTunes.getRemoveFileFromLibraryButton().setEnabled(value);
         slimTunes.getRemoveFileFromLibraryPopupItem().setEnabled(value);

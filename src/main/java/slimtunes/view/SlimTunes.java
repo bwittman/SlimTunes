@@ -10,6 +10,7 @@ public class SlimTunes extends JFrame {
 
     public static final String TITLE = "SlimTunes";
     public static final int SPACING = 10;
+    private static final int LIST_SPACING = 2;
     private final JList<FileTableModel> playlists;
     private final JLabel fileLabel;
     private final JTable fileTable;
@@ -27,8 +28,6 @@ public class SlimTunes extends JFrame {
     private final JMenuItem removeFileFromPlaylistItem;
 
     private final JPopupMenu popupMenu;
-
-
 
     private final JMenuItem removeFileFromLibraryPopupItem;
     private final JMenuItem selectPlaylistsForFilesPopupItem;
@@ -181,6 +180,7 @@ public class SlimTunes extends JFrame {
         DefaultListModel<FileTableModel> listModel = new DefaultListModel<>();
         listModel.addElement(library);
         playlists = new JList<>(listModel);
+        playlists.setBorder(BorderFactory.createEmptyBorder(LIST_SPACING,LIST_SPACING, LIST_SPACING, LIST_SPACING));
         playlists.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         playlists.setSelectedIndex(0);
         JScrollPane playlistScrollPane = new JScrollPane(playlists);
@@ -234,16 +234,16 @@ public class SlimTunes extends JFrame {
 
         // Popup stuff
         popupMenu = new JPopupMenu();
-        removeFileFromLibraryPopupItem = new JMenuItem("Remove File from Playlist");
-        removeFileFromLibraryPopupItem.setEnabled(false);
         selectPlaylistsForFilesPopupItem = new JMenuItem("Select Playlists for File");
         selectPlaylistsForFilesPopupItem.setEnabled(false);
         removeFileFromPlaylistPopupItem = new JMenuItem("Remove File from Playlist");
         removeFileFromPlaylistPopupItem.setEnabled(false);
+        removeFileFromLibraryPopupItem = new JMenuItem("Remove File from Playlist");
+        removeFileFromLibraryPopupItem.setEnabled(false);
 
-        popupMenu.add(removeFileFromLibraryPopupItem);
         popupMenu.add(selectPlaylistsForFilesPopupItem);
         popupMenu.add(removeFileFromPlaylistPopupItem);
+        popupMenu.add(removeFileFromLibraryPopupItem);
 
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         pack();
