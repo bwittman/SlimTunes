@@ -45,6 +45,7 @@ public class Reader implements DictionaryProcessor {
 
         Element plist = (Element) document.getElementsByTagName("plist").item(0);
         Element dictionary = getFirstDictionary(plist);
+        assert dictionary != null;
         processDictionary(dictionary, this);
     }
 
@@ -98,7 +99,7 @@ public class Reader implements DictionaryProcessor {
                 if (child.getNodeName().equals("dict")) {
                     processDictionary((Element)child, (k,v) -> {
                         int trackId = Integer.parseInt(v.getTextContent());
-                        currentPlaylist.add(currentLibrary.getFile(trackId));
+                        currentPlaylist.add(currentLibrary.getFileById(trackId));
                     });
                 }
             }

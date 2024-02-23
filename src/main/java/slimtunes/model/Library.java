@@ -41,9 +41,9 @@ public class Library extends FileTableModel implements WriteXML {
     private int lastIndex = 0;
 
     // Use of LinkedHashMap allows us to preserve order
-    private final Map<Integer, File> files = new LinkedHashMap<>();
-    
-    private List<File> fileList = null;
+    private final Map<Integer, File> fileMap = new HashMap<>();
+    private final List<File> files = new ArrayList<>();
+
     private final Set<String> artists = new TreeSet<>();
     private final List<Playlist> playlists = new ArrayList<>();
 
@@ -119,7 +119,8 @@ public class Library extends FileTableModel implements WriteXML {
     public void putFile(int trackId, File file) {
         if (trackId > lastIndex)
             lastIndex = trackId;
-        files.put(trackId, file);
+        fileMap.put(trackId, file);
+        files.add(file);
         if (file.getArtist() != null)
             artists.add(file.getArtist());
     }
@@ -127,9 +128,9 @@ public class Library extends FileTableModel implements WriteXML {
     @Override
     public boolean remove(File file) {
         if(file != null) {
-            File result = files.remove(file.getTrackId());
+            File result = fileMap.remove(file.getTrackId());
             if (result != null) {
-                fileList = null;
+                files.remove(file);
                 fireTableDataChanged();
             }
             return result != null;
@@ -143,7 +144,6 @@ public class Library extends FileTableModel implements WriteXML {
         ++lastIndex;
         file.addField(File.Fields.TRACK_ID, "" + lastIndex);
         putFile(lastIndex, file);
-        fileList = null;
         fireTableDataChanged();
     }
 
@@ -163,9 +163,9 @@ public class Library extends FileTableModel implements WriteXML {
 
         writer.keyDict("Tracks"); // open dict
 
-        for (Map.Entry<Integer, File> entry : files.entrySet()) {
-            writer.keyDict(entry.getKey().toString()); // open dict
-            entry.getValue().write(writer);
+        for (File file : files) {
+            writer.keyDict(file.getTrackId() + ""); // open dict
+            file.write(writer);
             writer.dict(false);
         }
 
@@ -191,8 +191,8 @@ public class Library extends FileTableModel implements WriteXML {
         return "<html><b>All Files</b></html>";
     }
 
-    public File getFile(int trackId) {
-        return files.get(trackId);
+    public File getFileById(int trackId) {
+        return fileMap.get(trackId);
     }
     public void addPlaylist(Playlist playlist) { playlists.add(playlist); }
 
@@ -203,9 +203,7 @@ public class Library extends FileTableModel implements WriteXML {
 
     @Override
     public File get(int rowIndex) {
-        if (fileList == null)
-            fileList = new ArrayList<>(files.values());
-        return fileList.get(rowIndex);
+        return files.get(rowIndex);
     }
 
 
