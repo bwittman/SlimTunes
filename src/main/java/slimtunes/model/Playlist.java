@@ -99,7 +99,7 @@ public class Playlist extends FileTableModel implements WriteXML {
         if (smartCriteria != null)
             writer.keyData(Fields.SMART_CRITERIA.toString(), smartCriteria);
 
-        if (files.size() > 0) {
+        if (!files.isEmpty()) {
             writer.keyArray("Playlist Items"); // open array
 
             for (File file : files) {

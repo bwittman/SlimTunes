@@ -13,7 +13,7 @@ import java.util.List;
 
 import static slimtunes.model.File.Fields;
 
-public abstract class FileTableModel extends AbstractTableModel {
+public abstract class FileTableModel extends AbstractTableModel implements WriteXML {
 
     private static final File.Fields[] COLUMNS = new Fields[] {
             File.Fields.TRACK_ID, File.Fields.NAME, File.Fields.ARTIST, File.Fields.ALBUM, File.Fields.TRACK_NUMBER, File.Fields.TOTAL_TIME, File.Fields.BIT_RATE, File.Fields.YEAR, File.Fields.GENRE,
@@ -100,6 +100,7 @@ public abstract class FileTableModel extends AbstractTableModel {
     public abstract File get(int rowIndex);
     public abstract boolean remove(File file);
     public abstract void add(File file);
+    public abstract boolean contains(File file);
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {

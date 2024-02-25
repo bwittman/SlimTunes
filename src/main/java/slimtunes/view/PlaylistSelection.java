@@ -1,6 +1,7 @@
 package slimtunes.view;
 
 import slimtunes.model.File;
+import slimtunes.model.FileTableModel;
 import slimtunes.model.Playlist;
 
 import javax.swing.*;
@@ -13,7 +14,7 @@ public class PlaylistSelection extends JDialog {
     private final JButton cancelButton = new JButton("Cancel");
 
     private final List<JCheckBox> checkBoxes = new ArrayList<>();
-    private final List<Playlist> playlists;
+    private final DefaultListModel<FileTableModel> playlists;
 
     public JButton getDoneButton() {
         return doneButton;
@@ -23,7 +24,8 @@ public class PlaylistSelection extends JDialog {
         return cancelButton;
     }
 
-    public PlaylistSelection(SlimTunes parent, File[] files, List<Playlist> playlists) {
+    public PlaylistSelection(SlimTunes parent, File[] files,
+                             DefaultListModel<FileTableModel> playlists) {
         super(parent, "Select Playlists", true);
         this.playlists = playlists;
 
@@ -53,7 +55,9 @@ public class PlaylistSelection extends JDialog {
 
         int widestCheckbox = 0;
 
-        for (Playlist playlist : playlists) {
+        // First playlist is always the library itself
+        for (int i = 1; i < playlists.size(); ++i) {
+            FileTableModel playlist = playlists.get(i);
             JCheckBox checkBox = createCheckBox(files, playlist);
             int width = checkBox.getWidth();
             if (width > widestCheckbox)
@@ -85,14 +89,14 @@ public class PlaylistSelection extends JDialog {
         setLocationRelativeTo(parent);
     }
 
-    public void updatePlaylists(List<Playlist> addLists, List<Playlist> removeLists) {
+    public void updatePlaylists(List<FileTableModel> addLists, List<FileTableModel> removeLists) {
         addLists.clear();
         removeLists.clear();
-        for (int i = 0; i < playlists.size(); ++i)
+        for (int i = 1; i < playlists.size(); ++i)
             updatePlaylists(checkBoxes.get(i), playlists.get(i), addLists, removeLists);
     }
 
-    private JCheckBox createCheckBox(File[] files, Playlist playlist) {
+    private JCheckBox createCheckBox(File[] files, FileTableModel playlist) {
         int count = 0;
         for (File file : files) {
             if (playlist.contains(file))
@@ -113,7 +117,7 @@ public class PlaylistSelection extends JDialog {
     }
 
 
-    public void updatePlaylists(JCheckBox checkBox, Playlist playlist, List<Playlist> addLists, List<Playlist> removeLists) {
+    public void updatePlaylists(JCheckBox checkBox, FileTableModel playlist, List<FileTableModel> addLists, List<FileTableModel> removeLists) {
         if (checkBox instanceof TristateCheckBox tristateCheckBox) {
             if (tristateCheckBox.getState() == TristateButtonModel.State.SELECTED)
                 addLists.add(playlist);

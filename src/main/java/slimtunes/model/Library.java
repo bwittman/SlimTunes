@@ -3,6 +3,7 @@ package slimtunes.model;
 import slimtunes.model.xml.WriteXML;
 import slimtunes.model.xml.Writer;
 
+import javax.swing.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -11,7 +12,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class Library extends FileTableModel implements WriteXML {
-    
+
+
+
 
     public enum Fields {
         MAJOR_VERSION, MINOR_VERSION, DATE, APPLICATION_VERSION, FEATURES, SHOW_CONTENT_RATINGS, MUSIC_FOLDER, LIBRARY_PERSISTENT_ID;
@@ -45,7 +48,11 @@ public class Library extends FileTableModel implements WriteXML {
     private final List<File> files = new ArrayList<>();
 
     private final Set<String> artists = new TreeSet<>();
-    private final List<Playlist> playlists = new ArrayList<>();
+    private final DefaultListModel<FileTableModel> playlists = new DefaultListModel<>();
+
+    public Library() {
+        playlists.addElement(this); // First playlist is always the library itself
+    }
 
     public void addField(String key, String value) {
         Library.Fields field = Library.Fields.valueOf(Library.Fields.nameToValue(key.trim()));
@@ -100,6 +107,10 @@ public class Library extends FileTableModel implements WriteXML {
         }
     }
 
+    public boolean removePlaylist(FileTableModel playlist) {
+        return playlists.removeElement(playlist);
+    }
+
     public static LocalDateTime parseDate(String date) {
         return LocalDateTime.parse(date, DateTimeFormatter.ISO_DATE_TIME);
     }
@@ -147,6 +158,11 @@ public class Library extends FileTableModel implements WriteXML {
         fireTableDataChanged();
     }
 
+    @Override
+    public boolean contains(File file) {
+        return files.contains(file);
+    }
+
     public void write(Writer writer) {
         writer.writePreamble();
         writer.plist(true);
@@ -173,7 +189,8 @@ public class Library extends FileTableModel implements WriteXML {
 
         writer.keyArray("Playlists"); // open dict
 
-        for (Playlist playlist : playlists) {
+        for (int i = 0; i < playlists.size(); ++i) {
+            FileTableModel playlist = playlists.get(i);
             writer.dict(true); // open dict
             playlist.write(writer);
             writer.dict(false);
@@ -195,7 +212,7 @@ public class Library extends FileTableModel implements WriteXML {
     public File getFileById(int trackId) {
         return fileMap.get(trackId);
     }
-    public void addPlaylist(Playlist playlist) { playlists.add(playlist); }
+    public void addPlaylist(Playlist playlist) { playlists.addElement(playlist); }
 
     @Override
     public int getRowCount() {
@@ -208,5 +225,5 @@ public class Library extends FileTableModel implements WriteXML {
     }
 
 
-    public List<Playlist> getPlaylists() { return playlists; }
+    public DefaultListModel<FileTableModel> getPlaylists() { return playlists; }
 }
