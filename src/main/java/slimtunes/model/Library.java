@@ -13,8 +13,14 @@ import java.util.*;
 
 public class Library extends FileTableModel implements WriteXML {
 
-
-
+    public void createPlaylist(String name) {
+        Playlist playlist = new Playlist();
+        ++lastPlaylistIndex;
+        playlist.addField(Playlist.Fields.PLAYLIST_ID, lastPlaylistIndex + "");
+        playlist.addField(Playlist.Fields.PLAYLIST_PERSISTENT_ID, String.format("%016X", File.RANDOM.nextLong()));
+        playlist.addField(Playlist.Fields.NAME, name);
+        addPlaylist(playlist);
+    }
 
     public enum Fields {
         MAJOR_VERSION, MINOR_VERSION, DATE, APPLICATION_VERSION, FEATURES, SHOW_CONTENT_RATINGS, MUSIC_FOLDER, LIBRARY_PERSISTENT_ID;
@@ -41,7 +47,8 @@ public class Library extends FileTableModel implements WriteXML {
     private Path musicFolder;
     private String libraryPersistentId;
 
-    private int lastIndex = 0;
+    private int lastFileIndex = 0;
+    private int lastPlaylistIndex = 0;
 
     // Use of LinkedHashMap allows us to preserve order
     private final Map<Integer, File> fileMap = new HashMap<>();
@@ -128,8 +135,8 @@ public class Library extends FileTableModel implements WriteXML {
     }
 
     public void putFile(int trackId, File file) {
-        if (trackId > lastIndex)
-            lastIndex = trackId;
+        if (trackId > lastFileIndex)
+            lastFileIndex = trackId;
         fileMap.put(trackId, file);
         files.add(file);
         if (file.getArtist() != null)
@@ -152,9 +159,9 @@ public class Library extends FileTableModel implements WriteXML {
 
     @Override
     public void add(File file) {
-        ++lastIndex;
-        file.addField(File.Fields.TRACK_ID, "" + lastIndex);
-        putFile(lastIndex, file);
+        ++lastFileIndex;
+        file.addField(File.Fields.TRACK_ID, "" + lastFileIndex);
+        putFile(lastFileIndex, file);
         fireTableDataChanged();
     }
 
@@ -212,7 +219,12 @@ public class Library extends FileTableModel implements WriteXML {
     public File getFileById(int trackId) {
         return fileMap.get(trackId);
     }
-    public void addPlaylist(Playlist playlist) { playlists.addElement(playlist); }
+    public void addPlaylist(Playlist playlist) {
+        Integer id = (Integer) playlist.getField(Playlist.Fields.PLAYLIST_ID);
+        if (id != null)
+            lastPlaylistIndex = Math.max(id, lastPlaylistIndex);
+        playlists.addElement(playlist);
+    }
 
     @Override
     public int getRowCount() {

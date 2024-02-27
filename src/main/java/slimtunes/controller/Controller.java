@@ -42,7 +42,8 @@ public class Controller {
   };
 
   public Controller() {
-    slimTunes = new SlimTunes(new Library());
+    library = new Library();
+    slimTunes = new SlimTunes(library);
     // newLibrary();
 
     xmlChooser.setFileFilter(
@@ -217,7 +218,15 @@ public class Controller {
     slimTunes.getRemoveFileFromLibraryPopupItem().addActionListener(e -> removeFileFromLibrary());
   }
 
-  private void createPlaylist() {}
+  private void createPlaylist() {
+    String name = JOptionPane.showInputDialog(slimTunes, "Name of new playlist:", "Create Playlist", JOptionPane.QUESTION_MESSAGE);
+    if (name != null) {
+      library.createPlaylist(name);
+      // Select newly added play list (last one)
+      slimTunes.getPlaylists().setSelectedIndex(library.getPlaylists().size() - 1);
+      setChanged(true);
+    }
+  }
 
   private void removePlaylist() {
     JList<FileTableModel> playlists = slimTunes.getPlaylists();

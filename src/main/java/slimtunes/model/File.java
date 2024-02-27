@@ -46,7 +46,7 @@ public class File implements WriteXML {
 
     }
 
-    private static final Random RANDOM = new Random();
+    public static final Random RANDOM = new Random();
 
     public File() {}
 

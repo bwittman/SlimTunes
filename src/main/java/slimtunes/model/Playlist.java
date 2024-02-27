@@ -22,8 +22,8 @@ public class Playlist extends FileTableModel implements WriteXML {
         public static final String[] NAMES = {"Name", "Description", "Master", "Playlist ID", "Playlist Persistent ID", "Distinguished Kind", "Music", "Movies", "TV Shows", "Podcasts", "Audiobooks", "Smart Info", "Smart Criteria", "Visible", "All Items"};
     }
 
-        public void addField(String key, String value) {
-            Fields field = Fields.valueOf(Fields.nameToValue(key.trim()));
+        public void addField(Fields field, String value) {
+
             switch (field)  {
                 case NAME -> name = value;
                 case DESCRIPTION -> description = value;
@@ -41,6 +41,33 @@ public class Playlist extends FileTableModel implements WriteXML {
                 case VISIBLE -> visible = Boolean.parseBoolean(value);
                 case ALL_ITEMS -> allItems = Boolean.parseBoolean(value);
             }
+    }
+
+    public void addField(String key, String value) {
+        Fields field = Fields.valueOf(Fields.nameToValue(key.trim()));
+        addField(field, value);
+    }
+
+
+
+    public Object getField(Fields field) {
+        return switch (field)  {
+            case NAME -> name;
+            case DESCRIPTION -> description;
+            case MASTER -> master;
+            case PLAYLIST_ID -> playlistId;
+            case PLAYLIST_PERSISTENT_ID -> playlistPersistentId;
+            case DISTINGUISHED_KIND -> distinguishedKind;
+            case MUSIC -> music;
+            case MOVIES -> movies;
+            case TV_SHOWS -> tvShows;
+            case PODCASTS -> podcasts;
+            case AUDIOBOOKS -> audiobooks;
+            case SMART_INFO -> smartInfo;
+            case SMART_CRITERIA -> smartCriteria;
+            case VISIBLE -> visible;
+            case ALL_ITEMS -> allItems;
+        };
     }
 
     private String name;
