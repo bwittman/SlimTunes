@@ -210,6 +210,17 @@ public class Controller {
     slimTunes.getCreatePlaylistItem().addActionListener(e -> createPlaylist());
     slimTunes.getRemovePlaylistItem().addActionListener(e -> removePlaylist());
 
+    // Help menu
+    slimTunes.getAboutItem().addActionListener(e -> JOptionPane.showMessageDialog(slimTunes,
+            "<html><b>SlimTunes Library Manager</b><br/><br/>" +
+                    "Author: Barry Wittman<br/>" +
+                    "License: Apache License 2.0<br/><br/>" +
+                    "Uses JAudioTagger to read media tags<br/><br/>" +
+                    "</html>",
+                    "About SlimTunes", JOptionPane.PLAIN_MESSAGE
+            ));
+
+
     // Popup menu
     slimTunes
         .getSelectPlaylistsForFilesPopupItem()
