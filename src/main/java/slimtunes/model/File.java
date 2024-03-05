@@ -133,7 +133,7 @@ public class File implements WriteXML {
             addField(Fields.COMPILATION, tag.getFirst(FieldKey.IS_COMPILATION));
             // Skip: PART_OF_GAPLESS_ALBUM
         } catch (CannotReadException | IOException | TagException | ReadOnlyFileException | InvalidAudioFrameException e) {
-            throw new FileCreationException();
+            throw new FileCreationException(path);
         }
     }
 

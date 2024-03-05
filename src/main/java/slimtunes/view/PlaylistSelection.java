@@ -92,8 +92,9 @@ public class PlaylistSelection extends JDialog {
     public void updatePlaylists(List<FileTableModel> addLists, List<FileTableModel> removeLists) {
         addLists.clear();
         removeLists.clear();
+        // First playlist is the library itself, not included in the checkboxes
         for (int i = 1; i < playlists.size(); ++i)
-            updatePlaylists(checkBoxes.get(i), playlists.get(i), addLists, removeLists);
+            updatePlaylists(checkBoxes.get(i - 1), playlists.get(i), addLists, removeLists);
     }
 
     private JCheckBox createCheckBox(File[] files, FileTableModel playlist) {

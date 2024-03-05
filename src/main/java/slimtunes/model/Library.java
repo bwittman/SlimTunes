@@ -135,10 +135,14 @@ public class Library extends FileTableModel implements WriteXML {
     }
 
     public void putFile(int trackId, File file) {
+        putFile(trackId, file, files.size());
+    }
+
+    private void putFile(int trackId, File file, int index) {
         if (trackId > lastFileIndex)
             lastFileIndex = trackId;
         fileMap.put(trackId, file);
-        files.add(file);
+        files.add(index, file);
         if (file.getArtist() != null)
             artists.add(file.getArtist());
     }
@@ -166,8 +170,19 @@ public class Library extends FileTableModel implements WriteXML {
     }
 
     @Override
+    public void add(int index, File file) {
+        putFile(file.getTrackId(), file, index);
+        fireTableDataChanged();
+    }
+
+    @Override
     public boolean contains(File file) {
         return files.contains(file);
+    }
+
+    @Override
+    public int find(File file) {
+        return files.indexOf(file);
     }
 
     public void write(Writer writer) {

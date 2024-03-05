@@ -30,13 +30,16 @@ public class Controller {
 
   private final SlimTunes slimTunes;
   private Library library;
-
-  private boolean changed = false;
   private java.io.File currentFile = null;
 
-  final JFileChooser xmlChooser = new JFileChooser();
-  final JFileChooser mediaChooser = new JFileChooser();
-  final String[] EXTENSIONS = {
+  private final JFileChooser xmlChooser = new JFileChooser();
+  private final JFileChooser mediaChooser = new JFileChooser();
+
+  private final List<Action> actions = new ArrayList<>();
+  private int lastSavedAction = -1;
+  private int currentAction = -1;
+
+  public final String[] EXTENSIONS = {
     ".aac", ".aiff", ".aif", ".aifc", ".dsf", ".flac", ".m4a", ".mp4", ".m4b", ".m4p", ".m4r",
     ".m4v", ".mov", ".mp3", ".oga", ".ogg", ".ogx", ".wav", ".wave", ".wma"
   };
@@ -102,7 +105,7 @@ public class Controller {
   }
 
   private boolean safeToContinue(String message) {
-    if (changed) {
+    if (isChanged()) {
       int answer =
           JOptionPane.showConfirmDialog(
               slimTunes,
@@ -120,6 +123,10 @@ public class Controller {
     }
 
     return true;
+  }
+
+  private boolean isChanged() {
+    return currentAction != lastSavedAction;
   }
 
   private void quit() {
@@ -202,6 +209,10 @@ public class Controller {
     JMenuItem exitItem = slimTunes.getExitItem();
     exitItem.addActionListener(e -> quit());
 
+    // Edit menu
+    slimTunes.getUndoItem().addActionListener(e -> undoAction());
+    slimTunes.getRedoItem().addActionListener(e -> redoAction());
+
     // Media menu
     slimTunes.getAddFileToLibraryItem().addActionListener(e -> addFileToLibrary());
     slimTunes.getRemoveFileFromLibraryItem().addActionListener(e -> removeFileFromLibrary());
@@ -215,7 +226,7 @@ public class Controller {
             "<html><b>SlimTunes Library Manager</b><br/><br/>" +
                     "Author: Barry Wittman<br/>" +
                     "License: Apache License 2.0<br/><br/>" +
-                    "Uses JAudioTagger to read media tags<br/><br/>" +
+                    "Uses JAudioTagger to read media tags.<br/><br/>" +
                     "</html>",
                     "About SlimTunes", JOptionPane.PLAIN_MESSAGE
             ));
@@ -278,16 +289,11 @@ public class Controller {
     for (int i = 0; i < files.length; ++i)
       files[i] = playlist.get(fileTable.convertRowIndexToModel(selections[i]));
 
-    boolean changed = this.changed; // might already be changed
-
-    for (File file : files) {
-      if (playlist.remove(file)) changed = true;
-    }
+    newAction(new UpdatePlaylistsAction(files,List.of(), List.of(playlist), true));
 
     slimTunes.getFileTable().clearSelection();
     setPlaylist(playlist);
     slimTunes.getSearchBar().setText(slimTunes.getSearchBar().getText());
-    setChanged(changed);
   }
 
   private void selectPlaylistsForFiles() {
@@ -313,27 +319,9 @@ public class Controller {
     List<FileTableModel> addLists = new ArrayList<>();
     List<FileTableModel> removeLists = new ArrayList<>();
     playlistSelection.updatePlaylists(addLists, removeLists);
-
-    boolean changed = this.changed; // might already be changed
-    for (File file : files) {
-      for (FileTableModel playlist : addLists) {
-        if (!playlist.contains(file)) {
-          playlist.add(file);
-          changed = true;
-        }
-      }
-
-      for (FileTableModel playlist : removeLists) {
-        if (playlist.remove(file)) changed = true;
-      }
-    }
-
-    slimTunes.getFileTable().clearSelection();
-    setPlaylist(slimTunes.getPlaylists().getSelectedValue());
-    slimTunes.getSearchBar().setText(slimTunes.getSearchBar().getText());
-    setChanged(changed);
-
     playlistSelection.dispose();
+
+    newAction(new UpdatePlaylistsAction(files, addLists, removeLists, false));
   }
 
   private void removeFileFromLibrary() {
@@ -357,20 +345,7 @@ public class Controller {
             JOptionPane.WARNING_MESSAGE);
 
     if (answer == JOptionPane.OK_OPTION) {
-      boolean changed = this.changed; // might already be changed
-      for (File file : files) {
-        DefaultListModel<FileTableModel> playlists = library.getPlaylists();
-        // Index 0 is library, so already included
-        for (int i = 0; i < playlists.size(); ++i) {
-          if (playlists.get(i).remove(file))
-            changed = true;
-        }
-      }
-
-      slimTunes.getFileTable().clearSelection();
-      setPlaylist(playlistsList.getSelectedValue());
-      slimTunes.getSearchBar().setText(slimTunes.getSearchBar().getText());
-      setChanged(changed);
+      newAction(new RemoveFromLibraryAction(files, library.getPlaylists()));
     }
   }
 
@@ -378,32 +353,64 @@ public class Controller {
     int result = mediaChooser.showOpenDialog(slimTunes);
     if (result == JFileChooser.APPROVE_OPTION) {
       java.io.File[] selection = mediaChooser.getSelectedFiles();
-      Set<Path> files = new HashSet<>();
+      Set<Path> paths = new HashSet<>();
       for (java.io.File file : selection) {
         if (file.isDirectory()) {
           try (Stream<Path> stream = Files.walk(file.toPath())) {
-            stream.filter(Files::isRegularFile).forEach(files::add);
+            stream.filter(Files::isRegularFile).forEach(paths::add);
           } catch (IOException ignored) {
           }
-        } else if (file.isFile()) files.add(file.toPath());
+        } else if (file.isFile()) paths.add(file.toPath());
       }
 
-      boolean changed = this.changed;
-      for (Path path : files) {
-        System.out.println(path);
-        try {
-          library.add(new File(path));
-          changed = true;
-        } catch (FileCreationException e) {
-          JOptionPane.showMessageDialog(
-              slimTunes, "Error opening file: " + path, "Open Error", JOptionPane.ERROR_MESSAGE);
-        }
+      try{
+        newAction(new AddToLibraryAction(paths));
+      } catch (FileCreationException e) {
+        JOptionPane.showMessageDialog(
+                slimTunes, "Error opening file: " + e.getPath(), "Open Error", JOptionPane.ERROR_MESSAGE);
       }
-
-      setPlaylist(slimTunes.getPlaylists().getSelectedValue());
-      slimTunes.getSearchBar().setText(slimTunes.getSearchBar().getText());
-      setChanged(changed);
     }
+  }
+
+  private void newAction(Action action) {
+    action.doAction(this);
+    // Remove anything after current action
+    // Only happens if there have been undos followed by a new action
+    while (currentAction < actions.size() - 1)
+      actions.remove(actions.size() - 1);
+    actions.add(action);
+    currentAction = actions.size() - 1;
+    updateActions();
+  }
+
+  private void undoAction() {
+    actions.get(currentAction).undoAction(this);
+    --currentAction;
+    updateActions();
+  }
+
+  private void redoAction() {
+    ++currentAction;
+    actions.get(currentAction).doAction(this);
+    updateActions();
+  }
+
+  private void updateActions() {
+    slimTunes.getFileTable().clearSelection();
+    setPlaylist(slimTunes.getPlaylists().getSelectedValue());
+    slimTunes.getSearchBar().setText(slimTunes.getSearchBar().getText());
+
+    boolean undoAvailable = actions.size() >= 1 && currentAction >= 0;
+    slimTunes.getUndoItem().setEnabled(undoAvailable);
+    if (undoAvailable)
+      slimTunes.getUndoItem().setText("Undo " + actions.get(currentAction));
+
+    boolean redoAvailable = actions.size() >= 1 && currentAction < actions.size() - 1;
+    slimTunes.getRedoItem().setEnabled(redoAvailable);
+    if (redoAvailable)
+      slimTunes.getRedoItem().setText("Redo " + actions.get(currentAction + 1));
+
+    setChanged(currentAction != lastSavedAction);
   }
 
   private boolean saveLibraryAs() {
@@ -435,11 +442,10 @@ public class Controller {
       slimTunes.setTitle(SlimTunes.TITLE + fileName + "*");
       slimTunes.getSaveItem().setEnabled(true);
     } else slimTunes.setTitle(SlimTunes.TITLE + fileName);
-    changed = value;
   }
 
   private void saveLibrary() {
-    if (changed && currentFile != null) save(currentFile);
+    if (isChanged() && currentFile != null) save(currentFile);
   }
 
   private void save(java.io.File file) {
@@ -448,6 +454,7 @@ public class Controller {
       library.write(writer);
       writer.close();
       currentFile = file;
+      lastSavedAction = currentAction;
       setChanged(false);
     } catch (IOException e) {
       JOptionPane.showMessageDialog(
@@ -578,13 +585,17 @@ public class Controller {
             });
   }
 
-  private void setPlaylist(FileTableModel playlist) {
+  public void setPlaylist(FileTableModel playlist) {
     JTable fileTable = slimTunes.getFileTable();
     if (playlist == null) playlist = library;
     slimTunes.getRemovePlaylistItem().setEnabled(playlist != library);
     fileTable.setModel(playlist);
     FileTableModel.setWidths(fileTable);
     updateStatus();
+  }
+
+  public Library getLibrary() {
+    return library;
   }
 
   public static void main(String[] args) {
@@ -613,5 +624,9 @@ public class Controller {
      */
 
     new Controller();
+  }
+
+  public SlimTunes getSlimTunes() {
+    return  slimTunes;
   }
 }

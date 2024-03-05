@@ -94,8 +94,19 @@ public class Playlist extends FileTableModel implements WriteXML {
         fireTableDataChanged();
     }
 
+    @Override
+    public void add(int index, File file) {
+        files.add(index, file);
+        fireTableDataChanged();
+    }
+
     public boolean contains(File file) {
         return files.contains(file);
+    }
+
+    @Override
+    public int find(File file) {
+        return files.indexOf(file);
     }
 
     @Override

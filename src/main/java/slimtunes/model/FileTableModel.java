@@ -3,13 +3,10 @@ package slimtunes.model;
 import slimtunes.model.xml.WriteXML;
 
 import javax.swing.*;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
-import javax.swing.table.TableModel;
 import java.time.LocalTime;
-import java.util.List;
 
 import static slimtunes.model.File.Fields;
 
@@ -100,7 +97,9 @@ public abstract class FileTableModel extends AbstractTableModel implements Write
     public abstract File get(int rowIndex);
     public abstract boolean remove(File file);
     public abstract void add(File file);
+    public abstract void add(int index, File file);
     public abstract boolean contains(File file);
+    public abstract int find(File file);
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
@@ -121,4 +120,6 @@ public abstract class FileTableModel extends AbstractTableModel implements Write
             default -> "";
         };
     }
+
+
 }

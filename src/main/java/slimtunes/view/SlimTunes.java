@@ -1,11 +1,9 @@
 package slimtunes.view;
 import slimtunes.model.FileTableModel;
 import slimtunes.model.Library;
-import slimtunes.model.Playlist;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 
 public class SlimTunes extends JFrame {
 
@@ -23,6 +21,8 @@ public class SlimTunes extends JFrame {
     private final JMenuItem saveItem;
     private final JMenuItem saveAsItem;
     private final JMenuItem exitItem;
+    private final JMenuItem undoItem;
+    private final JMenuItem redoItem;
     private final JMenuItem selectPlaylistsForFilesItem;
     private final JMenuItem removeFileFromPlaylistItem;
     private final JMenuItem addFileToLibraryItem;
@@ -90,6 +90,14 @@ public class SlimTunes extends JFrame {
         return exitItem;
     }
 
+    public JMenuItem getUndoItem() {
+        return undoItem;
+    }
+
+    public JMenuItem getRedoItem() {
+        return redoItem;
+    }
+
     public JMenuItem getAddFileToLibraryItem() {
         return addFileToLibraryItem;
     }
@@ -132,6 +140,8 @@ public class SlimTunes extends JFrame {
     }
 
     public JTextField getSearchBar() { return searchBar; }
+
+
 
     public SlimTunes(Library library) {
         super(TITLE);
@@ -227,6 +237,15 @@ public class SlimTunes extends JFrame {
         fileMenu.addSeparator();
         fileMenu.add(exitItem);
 
+        JMenu editMenu = new JMenu("Edit");
+        undoItem = new JMenuItem("Undo");
+        undoItem.setEnabled(false);
+        redoItem = new JMenuItem("Redo");
+        redoItem.setEnabled(false);
+
+        editMenu.add(undoItem);
+        editMenu.add(redoItem);
+
         JMenu mediaMenu = new JMenu("Media");
         selectPlaylistsForFilesItem = new JMenuItem("Select Playlists for File");
         selectPlaylistsForFilesItem.setEnabled(false);
@@ -253,6 +272,7 @@ public class SlimTunes extends JFrame {
         helpMenu.add(aboutItem);
 
         menuBar.add(fileMenu);
+        menuBar.add(editMenu);
         menuBar.add(mediaMenu);
         menuBar.add(helpMenu);
         setJMenuBar(menuBar);
