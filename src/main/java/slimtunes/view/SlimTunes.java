@@ -3,15 +3,16 @@ import slimtunes.model.FileTableModel;
 import slimtunes.model.Library;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 
 public class SlimTunes extends JFrame {
 
     public static final String TITLE = "SlimTunes";
     public static final int SPACING = 10;
-    private static final int LIST_SPACING = 2;
+    public static final int SMALL_SPACING = 2;
     private final JList<FileTableModel> playlists;
-    private final JLabel fileLabel;
+    private final JLabel informationLabel;
     private final JTable fileTable;
 
     private final JTextField searchBar;
@@ -131,8 +132,8 @@ public class SlimTunes extends JFrame {
         return playlists;
     }
 
-    public JLabel getFileLabel() {
-        return fileLabel;
+    public JLabel getInformationLabel() {
+        return informationLabel;
     }
 
     public JTable getFileTable() {
@@ -169,20 +170,20 @@ public class SlimTunes extends JFrame {
         // File table
         JScrollPane pane = new JScrollPane(fileTable);
         JPanel listPanel = new JPanel(new BorderLayout());
-        listPanel.setBorder(BorderFactory.createTitledBorder("File List"));
+        listPanel.setBorder(makeSpacedBorder("File List"));
         listPanel.add(pane, BorderLayout.CENTER);
         add(listPanel, BorderLayout.CENTER);
 
         // File information
-        fileLabel = new JLabel();
-        fileLabel.setPreferredSize(new Dimension(256, 256));
-        fileLabel.setMinimumSize(new Dimension(256, 256));
-        fileLabel.setVerticalAlignment(SwingConstants.TOP);
-        JScrollPane scrollPane = new JScrollPane(fileLabel);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder(SPACING, SPACING, SPACING, SPACING));
+        informationLabel = new JLabel();
+        informationLabel.setPreferredSize(new Dimension(256, 256));
+        informationLabel.setMinimumSize(new Dimension(256, 256));
+        informationLabel.setVerticalAlignment(SwingConstants.TOP);
+        JScrollPane scrollPane = new JScrollPane(informationLabel);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder(SMALL_SPACING, SMALL_SPACING, SMALL_SPACING, SMALL_SPACING));
 
         JPanel filePanel = new JPanel(new BorderLayout());
-        filePanel.setBorder(BorderFactory.createTitledBorder("Selected File"));
+        filePanel.setBorder(makeSpacedBorder("Information"));
         filePanel.add(scrollPane, BorderLayout.CENTER);
 
         selectPlaylistsForFilesButton = new JButton("Select Playlists for File");
@@ -204,12 +205,12 @@ public class SlimTunes extends JFrame {
 
         // Playlists
         playlists = new JList<>(library.getPlaylists());
-        playlists.setBorder(BorderFactory.createEmptyBorder(LIST_SPACING,LIST_SPACING, LIST_SPACING, LIST_SPACING));
+        playlists.setBorder(BorderFactory.createEmptyBorder(SMALL_SPACING, SMALL_SPACING, SMALL_SPACING, SMALL_SPACING));
         playlists.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         playlists.setSelectedIndex(0);
         JScrollPane playlistScrollPane = new JScrollPane(playlists);
         JPanel playlistPanel = new JPanel(new BorderLayout());
-        playlistPanel.setBorder(BorderFactory.createTitledBorder("Playlists"));
+        playlistPanel.setBorder(makeSpacedBorder("Playlists"));
         playlistPanel.add(playlistScrollPane, BorderLayout.CENTER);
         add(playlistPanel, BorderLayout.WEST);
 
@@ -295,5 +296,9 @@ public class SlimTunes extends JFrame {
         setMinimumSize(new Dimension(getWidth() * 2 / 3, getHeight() / 2));
         setLocationRelativeTo(null);
         setVisible(true);
+    }
+    public static Border makeSpacedBorder(String title) {
+        return BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(SMALL_SPACING, SMALL_SPACING, SMALL_SPACING, SMALL_SPACING),
+                BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder(title), BorderFactory.createEmptyBorder(SMALL_SPACING, SMALL_SPACING, SMALL_SPACING, SMALL_SPACING)));
     }
 }

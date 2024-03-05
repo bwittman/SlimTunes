@@ -520,7 +520,7 @@ public class Controller {
 
   private void updateStatus() {
     JList<FileTableModel> playlists = slimTunes.getPlaylists();
-    JLabel fileLabel = slimTunes.getFileLabel();
+    JLabel fileLabel = slimTunes.getInformationLabel();
     JTable fileTable = slimTunes.getFileTable();
     int selectedRows = fileTable.getSelectedRowCount();
 

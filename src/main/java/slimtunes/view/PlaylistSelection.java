@@ -31,7 +31,7 @@ public class PlaylistSelection extends JDialog {
 
         JPanel filePanel = new JPanel(new BorderLayout());
         String title = files.length > 1 ? "Selected Files" : "Selected File";
-        filePanel.setBorder(BorderFactory.createTitledBorder(title));
+        filePanel.setBorder(SlimTunes.makeSpacedBorder(title));
 
         boolean first = true;
         StringBuilder builder = new StringBuilder("<html>");
@@ -46,8 +46,8 @@ public class PlaylistSelection extends JDialog {
         JLabel fileLabel = new JLabel(builder.append("</html>").toString());
         fileLabel.setVerticalAlignment(SwingConstants.TOP);
         JScrollPane scrollPane = new JScrollPane(fileLabel);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder(SlimTunes.SPACING, SlimTunes.SPACING,
-                SlimTunes.SPACING, SlimTunes.SPACING));
+        scrollPane.setBorder(BorderFactory.createEmptyBorder(SlimTunes.SMALL_SPACING, SlimTunes.SMALL_SPACING,
+                SlimTunes.SMALL_SPACING, SlimTunes.SMALL_SPACING));
         filePanel.add(scrollPane, BorderLayout.CENTER);
 
         JPanel playlistPanel = new JPanel();
@@ -67,13 +67,13 @@ public class PlaylistSelection extends JDialog {
         }
 
         scrollPane = new JScrollPane(playlistPanel);
-        scrollPane.setBorder(BorderFactory.createTitledBorder("Choose Playlists"));
-
+        scrollPane.setBorder(SlimTunes.makeSpacedBorder("Choose Playlists"));
         // Buttons
         JPanel buttonPanel = new JPanel(new GridLayout(1, 2, SlimTunes.SPACING, SlimTunes.SPACING));
         buttonPanel.add(doneButton);
         buttonPanel.add(cancelButton);
         JPanel spacingPanel = new JPanel(new FlowLayout());
+        spacingPanel.setBorder(BorderFactory.createEmptyBorder(0, SlimTunes.SMALL_SPACING,SlimTunes.SMALL_SPACING,SlimTunes.SMALL_SPACING));
         spacingPanel.add(buttonPanel);
 
         add(filePanel, BorderLayout.NORTH);
