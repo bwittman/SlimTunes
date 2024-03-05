@@ -211,7 +211,8 @@ public class Library extends FileTableModel implements WriteXML {
 
         writer.keyArray("Playlists"); // open dict
 
-        for (int i = 0; i < playlists.size(); ++i) {
+        // Skip the first playlist, because it's the library itself
+        for (int i = 1; i < playlists.size(); ++i) {
             FileTableModel playlist = playlists.get(i);
             writer.dict(true); // open dict
             playlist.write(writer);
