@@ -5,6 +5,8 @@ import slimtunes.model.Library;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 
 public class SlimTunes extends JFrame {
 
@@ -222,15 +224,33 @@ public class SlimTunes extends JFrame {
         searchBarPanel.add(new JLabel("Search: "), BorderLayout.WEST);
         add(searchBarPanel, BorderLayout.NORTH);
 
+
+
+        Toolkit toolkit = Toolkit.getDefaultToolkit();
+
         // Menus
         JMenuBar menuBar = new JMenuBar();
         JMenu fileMenu = new JMenu("File");
+        fileMenu.setMnemonic(KeyEvent.VK_F);
         newItem = new JMenuItem("New");
         openItem = new JMenuItem("Open...");
         saveItem = new JMenuItem("Save");
         saveItem.setEnabled(false);
         saveAsItem = new JMenuItem("Save As...");
         exitItem = new JMenuItem("Exit");
+        newItem.setAccelerator(KeyStroke.getKeyStroke('N', toolkit.getMenuShortcutKeyMaskEx()));
+        newItem.setMnemonic(KeyEvent.VK_N);
+        openItem.setAccelerator(KeyStroke.getKeyStroke('O', toolkit.getMenuShortcutKeyMaskEx()));
+        openItem.setMnemonic(KeyEvent.VK_O);
+        saveItem.setAccelerator(KeyStroke.getKeyStroke('S', toolkit.getMenuShortcutKeyMaskEx()));
+        saveItem.setMnemonic(KeyEvent.VK_S);
+        saveAsItem.setAccelerator(
+        KeyStroke.getKeyStroke(
+            'S', toolkit.getMenuShortcutKeyMaskEx() | InputEvent.SHIFT_DOWN_MASK));
+        saveAsItem.setMnemonic(KeyEvent.VK_A);
+        exitItem.setAccelerator(KeyStroke.getKeyStroke('Q', toolkit.getMenuShortcutKeyMaskEx()));
+        exitItem.setMnemonic(KeyEvent.VK_X);
+
         fileMenu.add(newItem);
         fileMenu.add(openItem);
         fileMenu.add(saveItem);
@@ -238,16 +258,23 @@ public class SlimTunes extends JFrame {
         fileMenu.addSeparator();
         fileMenu.add(exitItem);
 
+
         JMenu editMenu = new JMenu("Edit");
+        editMenu.setMnemonic(KeyEvent.VK_E);
         undoItem = new JMenuItem("Undo");
         undoItem.setEnabled(false);
         redoItem = new JMenuItem("Redo");
         redoItem.setEnabled(false);
+        undoItem.setAccelerator(KeyStroke.getKeyStroke('Z', toolkit.getMenuShortcutKeyMaskEx()));
+        undoItem.setMnemonic(KeyEvent.VK_U);
+        redoItem.setAccelerator(KeyStroke.getKeyStroke('Y', toolkit.getMenuShortcutKeyMaskEx()));
+        redoItem.setMnemonic(KeyEvent.VK_R);
 
         editMenu.add(undoItem);
         editMenu.add(redoItem);
 
         JMenu mediaMenu = new JMenu("Media");
+        mediaMenu.setMnemonic(KeyEvent.VK_M);
         selectPlaylistsForFilesItem = new JMenuItem("Select Playlists for File");
         selectPlaylistsForFilesItem.setEnabled(false);
         removeFileFromPlaylistItem = new JMenuItem("Remove File from Playlist");
@@ -258,6 +285,15 @@ public class SlimTunes extends JFrame {
         createPlaylistItem = new JMenuItem("Create Playlist");
         removePlaylistItem = new JMenuItem("Remove Playlist");
         removePlaylistItem.setEnabled(false);
+        selectPlaylistsForFilesItem.setAccelerator(KeyStroke.getKeyStroke('P', toolkit.getMenuShortcutKeyMaskEx()));
+        selectPlaylistsForFilesItem.setMnemonic(KeyEvent.VK_S);
+        removeFileFromPlaylistItem.setAccelerator(KeyStroke.getKeyStroke('R', toolkit.getMenuShortcutKeyMaskEx()));
+        removeFileFromPlaylistItem.setMnemonic(KeyEvent.VK_R);
+        addFileToLibraryItem.setAccelerator(KeyStroke.getKeyStroke('F', toolkit.getMenuShortcutKeyMaskEx()));
+        addFileToLibraryItem.setMnemonic(KeyEvent.VK_A);
+        removeFileFromLibraryItem.setMnemonic(KeyEvent.VK_E);
+        createPlaylistItem.setMnemonic(KeyEvent.VK_C);
+        removePlaylistItem.setMnemonic(KeyEvent.VK_P);
 
         mediaMenu.add(selectPlaylistsForFilesItem);
         mediaMenu.add(removeFileFromPlaylistItem);
@@ -269,8 +305,11 @@ public class SlimTunes extends JFrame {
         mediaMenu.add(removePlaylistItem);
 
         JMenu helpMenu = new JMenu("Help");
+        helpMenu.setMnemonic(KeyEvent.VK_H);
         aboutItem = new JMenuItem("About");
+        aboutItem.setMnemonic(KeyEvent.VK_A);
         helpMenu.add(aboutItem);
+
 
         menuBar.add(fileMenu);
         menuBar.add(editMenu);

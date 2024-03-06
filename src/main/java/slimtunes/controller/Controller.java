@@ -240,9 +240,10 @@ public class Controller {
   }
 
   private void createPlaylist() {
-    String name = JOptionPane.showInputDialog(slimTunes, "Name of new playlist:", "Create Playlist", JOptionPane.QUESTION_MESSAGE);
-    if (name != null) {
-      newAction(new CreatePlaylistAction(library.createPlaylist(name)));
+    String name = JOptionPane.showInputDialog(slimTunes, "Name of new playlist:",
+            "Create Playlist", JOptionPane.QUESTION_MESSAGE);
+    if (name != null && !name.trim().isEmpty()) {
+      newAction(new CreatePlaylistAction(library.createPlaylist(name.trim())));
       // Select newly added play list (last one)
       slimTunes.getPlaylists().setSelectedIndex(library.getPlaylists().size() - 1);
     }
@@ -580,6 +581,8 @@ public class Controller {
     slimTunes.getRemoveFileFromLibraryItem().setEnabled(value);
     slimTunes.getRemoveFileFromLibraryButton().setEnabled(value);
     slimTunes.getRemoveFileFromLibraryPopupItem().setEnabled(value);
+
+    slimTunes.getSearchBar().requestFocus();
   }
 
   private void addPlaylistListeners() {
