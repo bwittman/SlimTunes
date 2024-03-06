@@ -13,13 +13,13 @@ import java.util.*;
 
 public class Library extends FileTableModel implements WriteXML {
 
-    public void createPlaylist(String name) {
+    public Playlist createPlaylist(String name) {
         Playlist playlist = new Playlist();
         ++lastPlaylistIndex;
         playlist.addField(Playlist.Fields.PLAYLIST_ID, lastPlaylistIndex + "");
         playlist.addField(Playlist.Fields.PLAYLIST_PERSISTENT_ID, String.format("%016X", File.RANDOM.nextLong()));
         playlist.addField(Playlist.Fields.NAME, name);
-        addPlaylist(playlist);
+        return playlist;
     }
 
     public enum Fields {
@@ -240,6 +240,13 @@ public class Library extends FileTableModel implements WriteXML {
         if (id != null)
             lastPlaylistIndex = Math.max(id, lastPlaylistIndex);
         playlists.addElement(playlist);
+    }
+
+    public void addPlaylist(int index, Playlist playlist) {
+        Integer id = (Integer) playlist.getField(Playlist.Fields.PLAYLIST_ID);
+        if (id != null)
+            lastPlaylistIndex = Math.max(id, lastPlaylistIndex);
+        playlists.insertElementAt(playlist, index);
     }
 
     @Override

@@ -47,7 +47,6 @@ public class Controller {
   public Controller() {
     library = new Library();
     slimTunes = new SlimTunes(library);
-    // newLibrary();
 
     xmlChooser.setFileFilter(
         new FileFilter() {
@@ -243,16 +242,16 @@ public class Controller {
   private void createPlaylist() {
     String name = JOptionPane.showInputDialog(slimTunes, "Name of new playlist:", "Create Playlist", JOptionPane.QUESTION_MESSAGE);
     if (name != null) {
-      library.createPlaylist(name);
+      newAction(new CreatePlaylistAction(library.createPlaylist(name)));
       // Select newly added play list (last one)
       slimTunes.getPlaylists().setSelectedIndex(library.getPlaylists().size() - 1);
-      setChanged(true);
     }
   }
 
   private void removePlaylist() {
     JList<FileTableModel> playlists = slimTunes.getPlaylists();
-    FileTableModel playlist = playlists.getSelectedValue();
+    Playlist playlist = (Playlist) playlists.getSelectedValue();
+    int index = playlists.getSelectedIndex();
     int answer =
         JOptionPane.showConfirmDialog(
             slimTunes,
@@ -263,8 +262,7 @@ public class Controller {
 
     if (answer == JOptionPane.OK_OPTION) {
       if (library.removePlaylist(playlist)) {
-        setPlaylist(library);
-        setChanged(true);
+        newAction(new RemovePlaylistAction(playlist, index));
       }
     }
   }
@@ -404,11 +402,15 @@ public class Controller {
     slimTunes.getUndoItem().setEnabled(undoAvailable);
     if (undoAvailable)
       slimTunes.getUndoItem().setText("Undo " + actions.get(currentAction));
+    else
+      slimTunes.getUndoItem().setText("Undo");
 
     boolean redoAvailable = actions.size() >= 1 && currentAction < actions.size() - 1;
     slimTunes.getRedoItem().setEnabled(redoAvailable);
     if (redoAvailable)
       slimTunes.getRedoItem().setText("Redo " + actions.get(currentAction + 1));
+    else
+      slimTunes.getRedoItem().setText("Redo");
 
     setChanged(currentAction != lastSavedAction);
   }
@@ -495,6 +497,13 @@ public class Controller {
     slimTunes.revalidate();
 
     slimTunes.getSearchBar().setText("");
+
+    // Empty undo/redo
+    actions.clear();
+    lastSavedAction = -1;
+    currentAction = -1;
+
+    updateActions();
   }
 
   private void addFileTableListeners() {
