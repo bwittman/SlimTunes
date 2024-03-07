@@ -231,12 +231,16 @@ public class Controller {
             ));
 
 
-    // Popup menu
+    // File popup menu
     slimTunes
         .getSelectPlaylistsForFilesPopupItem()
         .addActionListener(e -> selectPlaylistsForFiles());
     slimTunes.getRemoveFileFromPlaylistPopupItem().addActionListener(e -> removeFileFromPlaylist());
     slimTunes.getRemoveFileFromLibraryPopupItem().addActionListener(e -> removeFileFromLibrary());
+
+    // Playlist popup menu
+    slimTunes.getCreatePlaylistPopupItem().addActionListener(e -> createPlaylist());
+    slimTunes.getRemovePlaylistPopupItem().addActionListener(e -> removePlaylist());
   }
 
   private void createPlaylist() {
@@ -523,7 +527,7 @@ public class Controller {
           }
 
           private void doPop(MouseEvent e) {
-            slimTunes.getPopupMenu().show(e.getComponent(), e.getX(), e.getY());
+            slimTunes.getFilePopupMenu().show(e.getComponent(), e.getX(), e.getY());
           }
         });
   }
@@ -595,12 +599,30 @@ public class Controller {
               setPlaylist(playlists.getSelectedValue());
               slimTunes.getSearchBar().setText("");
             });
+
+
+    playlists.addMouseListener(
+            new MouseAdapter() {
+              public void mousePressed(MouseEvent e) {
+                if (e.isPopupTrigger()) doPop(e);
+              }
+
+              public void mouseReleased(MouseEvent e) {
+                if (e.isPopupTrigger()) doPop(e);
+              }
+
+              private void doPop(MouseEvent e) {
+                slimTunes.getPlaylistPopupMenu().show(e.getComponent(), e.getX(), e.getY());
+              }
+            });
+
   }
 
   public void setPlaylist(FileTableModel playlist) {
     JTable fileTable = slimTunes.getFileTable();
     if (playlist == null) playlist = library;
     slimTunes.getRemovePlaylistItem().setEnabled(playlist != library);
+    slimTunes.getRemovePlaylistPopupItem().setEnabled(playlist != library);
     fileTable.setModel(playlist);
     FileTableModel.setWidths(fileTable);
     updateStatus();

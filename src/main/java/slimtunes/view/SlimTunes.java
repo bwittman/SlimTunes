@@ -35,11 +35,16 @@ public class SlimTunes extends JFrame {
     private final JMenuItem aboutItem;
 
 
-    private final JPopupMenu popupMenu;
-
+    private final JPopupMenu filePopupMenu;
     private final JMenuItem removeFileFromLibraryPopupItem;
     private final JMenuItem selectPlaylistsForFilesPopupItem;
     private final JMenuItem removeFileFromPlaylistPopupItem;
+
+
+    private final JPopupMenu playlistPopupMenu;
+    private final JMenuItem createPlaylistPopupItem;
+    private final JMenuItem removePlaylistPopupItem;
+
 
     private final JButton selectPlaylistsForFilesButton;
     private final JButton removeFileFromPlaylistButton;
@@ -57,8 +62,8 @@ public class SlimTunes extends JFrame {
         return removeFileFromLibraryButton;
     }
 
-    public JPopupMenu getPopupMenu() {
-        return popupMenu;
+    public JPopupMenu getFilePopupMenu() {
+        return filePopupMenu;
     }
 
     public JMenuItem getRemoveFileFromLibraryPopupItem() {
@@ -71,6 +76,18 @@ public class SlimTunes extends JFrame {
 
     public JMenuItem getRemoveFileFromPlaylistPopupItem() {
         return removeFileFromPlaylistPopupItem;
+    }
+
+    public JPopupMenu getPlaylistPopupMenu() {
+        return playlistPopupMenu;
+    }
+
+    public JMenuItem getCreatePlaylistPopupItem() {
+        return createPlaylistPopupItem;
+    }
+
+    public JMenuItem getRemovePlaylistPopupItem() {
+        return removePlaylistPopupItem;
     }
 
     public JMenuItem getNewItem() {
@@ -317,8 +334,8 @@ public class SlimTunes extends JFrame {
         menuBar.add(helpMenu);
         setJMenuBar(menuBar);
 
-        // Popup stuff
-        popupMenu = new JPopupMenu();
+        // File Popup Menu
+        filePopupMenu = new JPopupMenu();
         selectPlaylistsForFilesPopupItem = new JMenuItem("Select Playlists for File");
         selectPlaylistsForFilesPopupItem.setEnabled(false);
         removeFileFromPlaylistPopupItem = new JMenuItem("Remove File from Playlist");
@@ -326,9 +343,18 @@ public class SlimTunes extends JFrame {
         removeFileFromLibraryPopupItem = new JMenuItem("Remove File from Playlist");
         removeFileFromLibraryPopupItem.setEnabled(false);
 
-        popupMenu.add(selectPlaylistsForFilesPopupItem);
-        popupMenu.add(removeFileFromPlaylistPopupItem);
-        popupMenu.add(removeFileFromLibraryPopupItem);
+        filePopupMenu.add(selectPlaylistsForFilesPopupItem);
+        filePopupMenu.add(removeFileFromPlaylistPopupItem);
+        filePopupMenu.add(removeFileFromLibraryPopupItem);
+
+        // Playlist Popup Menu
+        playlistPopupMenu = new JPopupMenu();
+        createPlaylistPopupItem = new JMenuItem("Create Playlist");
+        removePlaylistPopupItem = new JMenuItem("Remove Playlist");
+        removePlaylistPopupItem.setEnabled(false);
+
+        playlistPopupMenu.add(createPlaylistPopupItem);
+        playlistPopupMenu.add(removePlaylistPopupItem);
 
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         pack();
